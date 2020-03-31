@@ -15,18 +15,18 @@ Google bietet über seinen Dienst Google Maps Transit die Funktion an, zu zeigen
 **Basis:** [hystreet.com](https://hystreet.com)
 
 hystreet.com misst die Passantenfrequenz innerstädtischer Einzelhandelslagen mit Hilfe von Laserscannern an 117 Standorten in 57 Städten. Hystreet hat uns API-Zugriff gewährt und wir können daher sowohl auf stündlich aktualisierte Zahlen, als auch auf mehrere Jahre zurückliegende Daten zugreifen.
-![Hystreet Aufbau](https://i.imgur.com/tasxjUt.jpg)
+![Hystreet Aufbau](images/hystreet.jpg)
 
 ### Fußgänger auf öffentlichen Webcams
 Es gibt viele öffentliche Webcams, die belebte und beliebte Orte in unseren Städten zeigen. Durch Bilderkennungsprozesse werden Menschen auf den Bildern als solche erkannt und gezählt. Die Webcams werden zur Zeit stündlich abgefragt.
-![Beispiel Webcamauswertung](https://res.cloudinary.com/devpost/image/fetch/s--kuYyUeyM--/c_limit,f_auto,fl_lossy,q_auto:eco,w_900/https://i.imgur.com/CZmjvDM.jpg)
+![Beispiel Webcamauswertung](images/webcam.jpg)
 
 ### Fahrradfahrer 
 **Basis:** [Eco-Compteur](https://www.eco-compteur.com/)
 
 In vielen Innenstädten werden Fahrradfahrer an automatisierten Messstellen gezählt und von [Eco-Compteur](https://www.eco-compteur.com/) online gestellt. Die Daten der 42 deutschen Messstellen werden für unseren Datenpool abgerufen. Beispiel: http://eco-public.com/public2/?id=100004595
 
-![Fahradzählstation](https://res.cloudinary.com/devpost/image/fetch/s--icTr_OZZ--/c_limit,f_auto,fl_lossy,q_auto:eco,w_900/https://www.eco-visio.net/Photos/100117707/14315331118971.jpg)
+![Fahradzählstation](images/fahrradzaehler.jpg)
 
 ### DB Züge 
 **Basis:** [Deutsche Bahn](http://bahn.hafas.de/bin/detect.exe/bin/query.exe/d)
@@ -35,7 +35,7 @@ Die Deutsche Bahn bietet ihre Daten zu Zugverbindungen via API an. Diese Daten k
 Im den Diagrammen ist ein Anstieg bei den Zugausfällen am 2020-02-08/09 zu erkennen. Hier hat das Sturmtief Sabrina ganze Arbeit geleistet.
 Man sieht in den letzten Tagen einen Anstieg in den Ausfällen bei allen "Zugtypen". Hier kann man von Corona-bedingten Ausfällen ausgehen.
 Neben der Gesamtauswahl aller Verbindungen ist es auch möglich nur bestimmte Typen von Verbindungen auswerten zu lassen.
-![Auswertung Bahndaten](https://res.cloudinary.com/devpost/image/fetch/s--f7CkxPvI--/c_limit,f_auto,fl_lossy,q_auto:eco,w_900/https://i.imgur.com/8nWEhk5.png)
+![Auswertung Bahndaten](images/db_analyse.png)
 ### ÖPV Busse
 Ausgewertet werden mit dieser Auswahl nur die Daten der Deutschen Bahn, die sich auf Busverbindungen beziehen.
 

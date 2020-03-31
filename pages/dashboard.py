@@ -418,7 +418,7 @@ def dashboard():
         st_map_header.subheader('Social Distancing Karte vom {}'.format( datetime.datetime.strptime(latest_date,"%Y-%m-%d").strftime("%d.%m.%Y") ))
     except:
         st_map_header.subheader('Social Distancing Karte vom {}'.format(latest_date))
-    st_legend.image("https://github.com/socialdistancingdashboard/virushack/raw/master/dashboard/legende.png") 
+    st_legend.image("images/legende.png") 
      
 
    
@@ -441,6 +441,4 @@ def dashboard():
     # FOOTER
     # ======
     st.subheader("Unsere Datenquellen")
-    st.markdown("""
-        ![](https://github.com/socialdistancingdashboard/virushack/raw/master/logo/Datenquellen.PNG)
-    """)
+    st.image('images/datenquellen.png')

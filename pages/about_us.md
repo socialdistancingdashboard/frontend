@@ -4,10 +4,10 @@ In der Situation mit den weit verbreiteten Regelungen um die Corona Pandemie ein
 Die Idee hinter dem Dashboard war, für jeden verständlich darzustellen, ob und wie gut das Physical Distancing klappt. Weiterhin soll die breite Datenbasis aufbereitet zur Verfügung gestellt werden, um anderen Interessierten die Möglichkeit zu geben, eigene Auswertungen anzustellen.
 
 ## Für wen tun wir das? 
-Im Rahmen des Hackatrons wurde die Idee verfeinert und für drei Gruppen von Anwendern ausgearbeitet.
+Im Rahmen des Hackathons wurde die Idee verfeinert und für drei Gruppen von Anwendern ausgearbeitet.
 
 ### Björn Bürger - Bürger
-![Björn Bürger](https://res.cloudinary.com/devpost/image/fetch/s--UpjqVSef--/c_limit,f_auto,fl_lossy,q_auto:eco,w_900/https://i.imgur.com/9sX8vB2.png)
+![Björn Bürger](images/persona1.png)
 Er hält sich an die Vorgaben zum Physical Distancing, bleibt zuhause und schaut Fernsehen. Nach zwei Tagen wird ihm das jedoch schon langweilig und er fragt sich:
 #### Fragestellungen:
 - "Bringt mein Verhalten überhaupt was?"
@@ -21,7 +21,7 @@ Er hält sich an die Vorgaben zum Physical Distancing, bleibt zuhause und schaut
 ----
 
 ### Reiner Klein - Bürgermeister einer typischen mittelgroßen Stadt in Deutschland
-![Reiner Klein](https://res.cloudinary.com/devpost/image/fetch/s--E_83r2tv--/c_limit,f_auto,fl_lossy,q_auto:eco,w_900/https://i.imgur.com/Gz2IUIK.png)
+![Reiner Klein](images/persona2.png)
 In diesen Tagen hat er viele Krisensitzungen zu leiten und sorgt sich um die Gesundheit der Bürger*innen seiner Stadt. 
 
 #### Fragestellungen:
@@ -35,7 +35,7 @@ In diesen Tagen hat er viele Krisensitzungen zu leiten und sorgt sich um die Ges
 
 ----
 ### Franziska Bartels - engagierte Data Scientistin
-![Fanzsika Bartels](https://res.cloudinary.com/devpost/image/fetch/s--8GuvK94n--/c_limit,f_auto,fl_lossy,q_auto:eco,w_900/https://i.imgur.com/Qblf0mY.png)
+![Fanzsika Bartels](images/persona3.png)
 ie arbeitet momentan im Homeoffice für Ihr Unternehmen und stellt sich die Frage, ob sie neben #wirbleibenzuhause nicht auch noch einen aktiven Beitrag gegen die Ausbreitung von Corona leisten kann. Direkt stellt sich ihr die Frage:
 
 #### Fragestellungen:

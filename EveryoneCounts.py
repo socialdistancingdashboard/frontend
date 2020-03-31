@@ -26,13 +26,13 @@ import requests
 from PIL import Image
 from io import BytesIO
 
-from dashboard import dashboard
-from dashboard import dashboard_pages
+from pages import dashboard
+from pages import dashboard_pages
+
+
 
 # sidebar header
-response = requests.get('https://github.com/socialdistancingdashboard/virushack/raw/master/logo/logo_with_medium_text.png')
-img = Image.open(BytesIO(response.content))
-st.sidebar.image(img, use_column_width=True)
+st.sidebar.image('images/logo_with_medium_text.png', use_column_width=True)
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
 # sidebar menu
@@ -69,27 +69,16 @@ st.markdown("""
         #MainMenu.dropdown {{
             display: none;
         }}
+        img {{
+            max-width: 99%;
+            border-radius:5px;
+        }}
     </style>
     """.format(selected=menuitems[menu]), unsafe_allow_html=True)
 
 
-
-# main content
-if menuitems[menu]==1:
-    dashboard.dashboard()
-elif menuitems[menu]==2:
-    dashboard_pages.about_our_data()
-elif menuitems[menu]==3:
-    dashboard_pages.about_us()
-elif menuitems[menu]==4:
-    dashboard_pages.about_team()
-    pass
-#elif menu=='Impressum':
-#    dashboard_pages.impressum()
-
 # sidebar footer
-st.sidebar.markdown("<br><br><br><br>", unsafe_allow_html=True)
-st.sidebar.markdown("---")
+st.sidebar.markdown("<br><br><br>", unsafe_allow_html=True)
 st.sidebar.subheader("weitere Infos")
 st.sidebar.markdown('''
 - [@DistancingDash](https://twitter.com/distancingdash/)
@@ -98,11 +87,25 @@ st.sidebar.markdown('''
 - [Github](https://github.com/socialdistancingdashboard)
 ''')
 
-
-
 st.sidebar.subheader("Pressestimmen")
 st.sidebar.markdown('''
 - [Tagesspiegel](https://www.tagesspiegel.de/wirtschaft/hackathon-im-netz-programmierer-tuefteln-an-loesungen-gegen-die-corona-krise/25670548.html)
-- [SWR-Online](https://www.swr.de/swraktuell/wie-deutschland-das-coronavirus-hackt-wirvsvirus-hackathon-100.html)
+- [SWR](https://www.swr.de/swraktuell/wie-deutschland-das-coronavirus-hackt-wirvsvirus-hackathon-100.html)
 - [WDR](https://www1.wdr.de/nachrichten/themen/coronavirus/verkehr-innenstadt-corona-100.html)
+- [Tagesschau](https://www.youtube.com/watch?v=donUKy8IGZw)
+- [tagesschau.de](https://www.tagesschau.de/investigativ/ndr-wdr/datenanalyse-oeffentliches-leben-corona-101.html)
+- [NDR](https://www.ndr.de/nachrichten/info/Corona-Besonders-die-Hamburger-befolgen-die-Kontaktsperre,coronavirus1006.html)
 ''')
+
+# main content
+if menuitems[menu]==1:
+    dashboard.dashboard()
+elif menuitems[menu]==2:
+    dashboard_pages.parse_md_with_images('pages/about_our_data.md')
+elif menuitems[menu]==3:
+    dashboard_pages.parse_md_with_images('pages/about_us.md')
+elif menuitems[menu]==4:
+    dashboard_pages.parse_md_with_images('pages/das_team.md')
+    pass
+#elif menu=='Impressum':
+#    dashboard_pages.impressum()
