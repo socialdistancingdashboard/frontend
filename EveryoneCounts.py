@@ -69,12 +69,36 @@ st.markdown("""
         #MainMenu.dropdown {{
             display: none;
         }}
-        img {{
-            max-width: 99%;
-            border-radius:5px;
-        }}
     </style>
     """.format(selected=menuitems[menu]), unsafe_allow_html=True)
+
+
+# additional css
+st.markdown("""
+    <style type='text/css'>
+        img {
+            max-width: 99%;
+            border-radius:5px;
+        }
+        
+        /* improve visibility of collapsed menu button on mobile */
+        .open-iconic[data-glyph="chevron-right"]:after {
+            content: "Menü";
+            margin-top:-3px;
+            margin-left:5px;
+            vertical-align: middle;
+        }
+        .open-iconic[data-glyph="chevron-right"] {
+            vertical-align: middle;
+            opacity:1 !important;
+        }
+        .--collapsed button {
+            background: #F0F2F6;
+            box-shadow: #fff 0px 0px 10px;
+            border: 1px solid white;
+        }
+    </style>
+    """, unsafe_allow_html=True)
 
 
 # sidebar footer
