@@ -102,7 +102,12 @@ st.markdown("""
 
 
 # sidebar footer
-st.sidebar.markdown("<br><br><br>", unsafe_allow_html=True)
+st.sidebar.markdown("""
+
+
+--- 
+
+""", unsafe_allow_html=True)
 st.sidebar.subheader("weitere Infos")
 st.sidebar.markdown('''
 - [@DistancingDash](https://twitter.com/distancingdash/)
@@ -119,6 +124,12 @@ st.sidebar.markdown('''
 - [Tagesschau](https://www.youtube.com/watch?v=donUKy8IGZw)
 - [tagesschau.de](https://www.tagesschau.de/investigativ/ndr-wdr/datenanalyse-oeffentliches-leben-corona-101.html)
 - [NDR](https://www.ndr.de/nachrichten/info/Corona-Besonders-die-Hamburger-befolgen-die-Kontaktsperre,coronavirus1006.html)
+''')
+
+st.sidebar.subheader("Kontakt")
+st.sidebar.markdown('''
+- [@DistancingDash](https://twitter.com/distancingdash/)
+- [kontakt@everyonecounts.de](mailto:kontakt@everyonecounts.de)
 ''')
 
 # main content

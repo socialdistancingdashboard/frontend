@@ -56,7 +56,9 @@ div.team>div:hover {
 ## Mitmachen
 Du möchtest dich an diesem Projekt beteiligen? Großartig! Wir können in allen Bereichen Unterstüzung gebrauchen, sei es in der Backend- und Frontend-Entwicklung,  bei der API-Organisation, der Datenaggregation, beim Einpflegen neuer Datenquellen, für Storytelling und Design. Komm mit ins Team!
 
-Melde Dich am Besten über Twitter bei [@DistancingDash](https://twitter.com/distancingdash/) oder über [Github](https://github.com/socialdistancingdashboard) oder tritt direkt unserer [Slack-Instanz](https://join.slack.com/t/socialdistancing-dash/shared_invite/zt-czm00v52-kEe0fEA5lZwwWhuYuZKj_A) bei.
+
+## Kontakt
+Melde Dich am Besten über Twitter bei [@DistancingDash](https://twitter.com/distancingdash/) oder schreib uns eine E-Mail an [kontakt@everyonecounts.de](mailto:kontakt@everyonecounts.de). Alternativ kontaktierst Du uns über [Github](https://github.com/socialdistancingdashboard) oder trittst direkt unserer [Slack-Instanz](https://join.slack.com/t/socialdistancing-dash/shared_invite/zt-czm00v52-kEe0fEA5lZwwWhuYuZKj_A) bei.
 
 ## Datenzugriff
 
