@@ -26,10 +26,8 @@ def load_topojson():
         state_ids.append(state["id"])
     return county_names, county_ids, state_names, state_ids
 
-@st.cache(persist=True)
-def load_real_data(dummy_time):
-    # dummy_time parameter changes twice daily. Otherwise, streamlit 
-    # would always return cached data
+@st.cache(persist=True, ttl=43200) # time-to-live: 12h
+def load_real_data():
     response = requests.get('https://0he6m5aakd.execute-api.eu-central-1.amazonaws.com/prod')
     jsondump = response.json()["body"]
     
@@ -78,7 +76,7 @@ def load_real_data(dummy_time):
     
     return df_scores, scorenames
     
-@st.cache(persist=True)
+@st.cache()
 def get_map(df_scores,selected_score,selected_score_axis,use_states,latest_date):
     url_topojson = 'https://raw.githubusercontent.com/AliceWi/TopoJSON-Germany/master/germany.json'
     MAPHEIGHT = 600
@@ -153,7 +151,7 @@ def get_map(df_scores,selected_score,selected_score_axis,use_states,latest_date)
         c = alt.layer(basemap, layer, overlaymap).configure_view(strokeOpacity=0)
     return c
     
-@st.cache(persist=True)
+@st.cache()
 def get_timeline_plots(df_scores, selected_score, selected_score_axis, use_states, countys):
     if len(countys) > 0 and not use_states:
         # Landkreise
@@ -194,8 +192,8 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, use_state
     else:
         return None
 
-def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_county_select, key, default_detail_index=0, default_score="hystreet_score"):
 
+def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_county_select, key, default_detail_index=0, default_score="hystreet_score"):
     df_scores = df_scores_in.copy()
     
     # get counties
@@ -275,7 +273,6 @@ def dashboard():
     st_info_text       = st.empty()
    
 
-    
     # Insert custom CSS
     # - prevent horizontal scrolling on mobile
     # - restrict images to container width
@@ -306,10 +303,7 @@ def dashboard():
     
     
     # get score data
-    dummy_time = datetime.datetime.now().strftime("%Y-%m-%d-%p") # 2020-03-28-PM, changes twice daily
-    df_scores_full, scorenames = load_real_data(dummy_time)
-    #df_scores = df_scores_full.copy()
-    
+    df_scores_full, scorenames = load_real_data()
    
     # descriptive names for each score
     scorenames_desc_manual = {
