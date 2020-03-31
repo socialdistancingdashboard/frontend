@@ -138,7 +138,7 @@ def get_map(df_scores,selected_score,selected_score_axis, selected_score_desc, u
         )
     else:
         # draw counties map
-        df_scores_lookup = df_scores[(df_scores["date"] == str(latest_date)) & (df_scores["filtered_score"] > 0)]
+        df_scores_lookup = df_scores[(df_scores["date"] == str(latest_date)) & (df_scores["filtered_score"] >= 0)]
         df_scores_lookup = df_scores_lookup[['id','date','name','filtered_score']]
         
         layer = alt.Chart(data_topojson_remote).mark_geoshape(
