@@ -188,7 +188,7 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, selected_
     if len(countys) > 0 and not use_states:
         # Landkreise
         df_scores = df_scores[df_scores["name"].isin(countys)].dropna(axis=1, how="all")
-        c = alt.Chart(
+        chart = alt.Chart(
             df_scores[df_scores["name"].isin(countys)][["name", "date", "filtered_score"]].dropna()
             ).mark_line(point=True).encode(
                 x=alt.X('date:T', axis=alt.Axis(title='Datum', format=("%d %b"))),
@@ -204,12 +204,10 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, selected_
                 height=400,
                 title=title
             )
-
-        return c 
     elif use_states:
         # Bundesländer
         df_scores=df_scores[["state_name", "date", selected_score]].dropna()
-        c = alt.Chart(df_scores).mark_line(point=True).encode(
+        chart = alt.Chart(df_scores).mark_line(point=True).encode(
             x=alt.X('date:T', axis=alt.Axis(title='Datum', format=("%d %b"))),
             y=alt.Y(selected_score+':Q', title=selected_score_axis),
             color=alt.Color('state_name', title="Bundesland", scale=alt.Scale(scheme='category20')),
@@ -223,10 +221,16 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, selected_
             height=400,
             title=title
         )
-        return c
-        
     else:
         return None
+        
+    # add horizontal rule at 100%
+    rule = alt.Chart(df_scores).mark_rule(color='lightgray').encode(
+        y="a:Q"
+    ).transform_calculate(
+        a="100"
+    )
+    return rule+chart
 
 
 def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_county_select, key, default_detail_index=0, default_score="hystreet_score"):
