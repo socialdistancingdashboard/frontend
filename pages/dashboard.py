@@ -265,7 +265,7 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
     
     # COUNTY SELECT
     if (not use_states) and allow_county_select:
-        available_countys = [value for value in county_names if value in df_scores[df_scores[selected_score] > 0]["name"].values]
+        available_countys = [value for value in county_names if value in df_scores[df_scores[selected_score] >= 0]["name"].values]
         if len(available_countys) > 1:
             default=available_countys[:2]
         else:
