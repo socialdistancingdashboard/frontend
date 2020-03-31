@@ -77,9 +77,9 @@ def load_real_data():
     return df_scores, scorenames
     
 @st.cache()
-def get_map(df_scores,selected_score,selected_score_axis,use_states,latest_date):
+def get_map(df_scores,selected_score,selected_score_axis, selected_score_desc, use_states,latest_date):
     url_topojson = 'https://raw.githubusercontent.com/AliceWi/TopoJSON-Germany/master/germany.json'
-    MAPHEIGHT = 600
+    MAPHEIGHT = 640
     if use_states:
         features = 'states'
         sw = 1
@@ -100,6 +100,17 @@ def get_map(df_scores,selected_score,selected_score_axis,use_states,latest_date)
             stroke='white',
             strokeWidth=sw
         ).properties(width='container',height = MAPHEIGHT)
+        
+    title= {
+        "text": ["", selected_score_desc], # use two lines as hack so the umlauts at Ö are not cut off
+        "subtitle": "EveryoneCounts.de",
+        "color": "black",
+        "subtitleColor": "lightgray",
+        "subtitleFontSize":12,
+        "subtitleFontWeight":"normal",
+        "fontSize":15,
+        "lineHeight":5,
+    }
     if use_states:
         #draw state map
         layer = alt.Chart(data_topojson_remote).mark_geoshape(
@@ -120,7 +131,11 @@ def get_map(df_scores,selected_score,selected_score_axis,use_states,latest_date)
         ).transform_lookup(
             lookup='id',
             from_= alt.LookupData(df_scores[(df_scores["date"] == str(latest_date)) & (df_scores[selected_score] > 0)], 'id', ['state_name'])
-        ).properties(width='container',height = MAPHEIGHT)
+        ).properties(
+            width='container',
+            height = MAPHEIGHT,
+            title=title
+        )
     else:
         # draw counties map
         df_scores_lookup = df_scores[(df_scores["date"] == str(latest_date)) & (df_scores["filtered_score"] > 0)]
@@ -144,7 +159,12 @@ def get_map(df_scores,selected_score,selected_score_axis,use_states,latest_date)
         ).transform_lookup(
             lookup='id',
             from_= alt.LookupData(df_scores_lookup, 'id', ['name'])
-        ).properties(width='container',height = MAPHEIGHT)
+        ).properties(
+            width='container',
+            height = MAPHEIGHT,
+            title=title
+        )
+        
     if use_states:
         c = alt.layer(basemap, layer).configure_view(strokeOpacity=0)
     else:
@@ -152,7 +172,19 @@ def get_map(df_scores,selected_score,selected_score_axis,use_states,latest_date)
     return c
     
 @st.cache()
-def get_timeline_plots(df_scores, selected_score, selected_score_axis, use_states, countys):
+def get_timeline_plots(df_scores, selected_score, selected_score_axis, selected_score_desc, use_states, countys):
+    
+    title= {
+        "text": ["", selected_score_desc], # use two lines as hack so the umlauts at Ö are not cut off
+        "subtitle": "EveryoneCounts.de",
+        "color": "black",
+        "subtitleColor": "lightgray",
+        "subtitleFontSize":12,
+        "subtitleFontWeight":"normal",
+        "fontSize":15,
+        "lineHeight":5,
+    }
+    
     if len(countys) > 0 and not use_states:
         # Landkreise
         df_scores = df_scores[df_scores["name"].isin(countys)].dropna(axis=1, how="all")
@@ -169,9 +201,11 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, use_state
                     ]
             ).properties(
                 width='container',
-                height=400
-        )
-        return c
+                height=400,
+                title=title
+            )
+
+        return c 
     elif use_states:
         # Bundesländer
         df_scores=df_scores[["state_name", "date", selected_score]].dropna()
@@ -186,9 +220,11 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, use_state
                 ]
         ).properties(
             width='container',
-            height=400
+            height=400,
+            title=title
         )
         return c
+        
     else:
         return None
 
@@ -309,7 +345,7 @@ def dashboard():
     scorenames_desc_manual = {
         "gmap_score":"Menschen an Haltestellen des ÖPNV",
         "gmap_supermarket_score":"Besucher in Supermärkten",
-        "hystreet_score":"Fußgänger in Innenstädten (Laserscanner-Messung)",
+        "hystreet_score":"Fußgänger in Innenstädten",
         "zug_score":"DB Züge",
         "bike_score":"Fahrradfahrer",
         "bus_score":"ÖPV Busse",
@@ -418,7 +454,7 @@ def dashboard():
    
     # DRAW MAP
     # ========
-    map = get_map(df_scores, selected_score, selected_score_axis, use_states, latest_date)
+    map = get_map(df_scores, selected_score, selected_score_axis, selected_score_desc, use_states, latest_date)
     map2 = map.copy() # otherwise streamlit gives a Cached Object Mutated warning
     st_map.altair_chart(map2)
     
@@ -426,7 +462,7 @@ def dashboard():
     # ==============
     st_timeline_header.subheader("Zeitlicher Verlauf")
         
-    timeline = get_timeline_plots(df_scores2, selected_score2, selected_score_axis2, use_states2, countys2)
+    timeline = get_timeline_plots(df_scores2, selected_score2, selected_score_axis2, selected_score_desc2, use_states2, countys2)
     if timeline is not None:
         timeline2 = timeline.copy() # otherwise streamlit gives a Cached Object Mutated warning
         st_timeline.altair_chart(timeline2)
