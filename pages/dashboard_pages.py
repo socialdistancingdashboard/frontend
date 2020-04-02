@@ -1,6 +1,6 @@
 import streamlit as st
 
-def parse_md_with_images(filename):
+def parse_md_with_local_images(filename):
     ''' 
     streamlit cannot handle local image paths in markdown
     documents, therefore these have to be located and inserted
@@ -22,3 +22,7 @@ def parse_md_with_images(filename):
                 
                 ---
                 ''')
+
+def st_markdown(filename):
+    with open(filename,'r') as f:
+        st.markdown(f.read())

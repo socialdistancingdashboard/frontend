@@ -7,7 +7,9 @@ Die Idee hinter dem Dashboard war, für jeden verständlich darzustellen, ob und
 Im Rahmen des Hackathons wurde die Idee verfeinert und für drei Gruppen von Anwendern ausgearbeitet.
 
 ### Björn Bürger - Bürger
-![Björn Bürger](images/persona1.png)
+
+![Björn Bürger](http://images.everyonecounts.de/persona1.png)
+
 Er hält sich an die Vorgaben zum Physical Distancing, bleibt zuhause und schaut Fernsehen. Nach zwei Tagen wird ihm das jedoch schon langweilig und er fragt sich:
 #### Fragestellungen:
 - "Bringt mein Verhalten überhaupt was?"
@@ -21,7 +23,9 @@ Er hält sich an die Vorgaben zum Physical Distancing, bleibt zuhause und schaut
 ----
 
 ### Reiner Klein - Bürgermeister einer typischen mittelgroßen Stadt in Deutschland
-![Reiner Klein](images/persona2.png)
+
+![Reiner Klein](http://images.everyonecounts.de/persona2.png)
+
 In diesen Tagen hat er viele Krisensitzungen zu leiten und sorgt sich um die Gesundheit der Bürger*innen seiner Stadt. 
 
 #### Fragestellungen:
@@ -34,9 +38,12 @@ In diesen Tagen hat er viele Krisensitzungen zu leiten und sorgt sich um die Ges
 - Entscheidungsgrundlage für weitere Schutzmaßnahmen
 
 ----
+
 ### Franziska Bartels - engagierte Data Scientistin
-![Fanzsika Bartels](images/persona3.png)
-ie arbeitet momentan im Homeoffice für Ihr Unternehmen und stellt sich die Frage, ob sie neben #wirbleibenzuhause nicht auch noch einen aktiven Beitrag gegen die Ausbreitung von Corona leisten kann. Direkt stellt sich ihr die Frage:
+
+![Fanzsika Bartels](http://images.everyonecounts.de/persona3.png)
+
+Sie arbeitet momentan im Homeoffice für Ihr Unternehmen und stellt sich die Frage, ob sie neben #wirbleibenzuhause nicht auch noch einen aktiven Beitrag gegen die Ausbreitung von Corona leisten kann. Direkt stellt sich ihr die Frage:
 
 #### Fragestellungen:
 - "Woher bekomme ich die nötigen Daten, um Analysen zu machen oder eine sinnvolle Anwendung zu entwickeln?"

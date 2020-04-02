@@ -136,11 +136,11 @@ st.sidebar.markdown('''
 if menuitems[menu]==1:
     dashboard.dashboard()
 elif menuitems[menu]==2:
-    dashboard_pages.parse_md_with_images('pages/about_our_data.md')
+    dashboard_pages.st_markdown('pages/about_our_data.md')
 elif menuitems[menu]==3:
-    dashboard_pages.parse_md_with_images('pages/about_us.md')
+    dashboard_pages.st_markdown('pages/about_us.md')
 elif menuitems[menu]==4:
-    dashboard_pages.parse_md_with_images('pages/das_team.md')
+    dashboard_pages.st_markdown('pages/das_team.md')
     pass
 #elif menu=='Impressum':
 #    dashboard_pages.impressum()
