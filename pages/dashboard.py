@@ -111,6 +111,11 @@ def get_map(df_scores,selected_score,selected_score_axis, selected_score_desc, u
         "fontSize":15,
         "lineHeight":5,
     }
+    if selected_score=="webcam_score":
+        colorscale = alt.Scale(scheme='goldgreen')
+    else:
+        colorscale = alt.Scale(domain=(200, 0), scheme='redyellowgreen')
+    
     if use_states:
         #draw state map
         layer = alt.Chart(data_topojson_remote).mark_geoshape(
@@ -119,9 +124,8 @@ def get_map(df_scores,selected_score,selected_score_axis, selected_score_desc, u
         ).encode(
                 color=alt.Color(selected_score+':Q', 
                                 title=selected_score_axis, 
-                                scale=alt.Scale(domain=(200, 0),
-                                scheme='redyellowgreen'),
-                legend=None
+                                scale=colorscale,
+                                legend=None
             ),
             tooltip=[alt.Tooltip("state_name:N", title="Bundesland"),
                      alt.Tooltip(selected_score+":Q", title=selected_score_axis)]
@@ -147,9 +151,8 @@ def get_map(df_scores,selected_score,selected_score_axis, selected_score_desc, u
         ).encode(
                 color=alt.Color('filtered_score:Q', 
                                 title=selected_score_axis, 
-                                scale=alt.Scale(domain=(200, 0),
-                                scheme='redyellowgreen'),
-                legend=None
+                                scale=colorscale,
+                                legend=None
             ),
             tooltip=[alt.Tooltip("name:N", title="Kreis"),
                      alt.Tooltip("filtered_score:Q", title=selected_score_axis)]
@@ -259,7 +262,10 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
     )
     inverse_scorenames_desc = {scorenames_desc[key]:key for key in scorenames_desc.keys()}
     selected_score = inverse_scorenames_desc[selected_score_desc]
-    selected_score_axis = scorenames_axis[selected_score] + ' (%)'
+    if selected_score == "webcam_score":
+        selected_score_axis = scorenames_axis[selected_score] + ' pro Stunde' # absolute values
+    else:
+        selected_score_axis = scorenames_axis[selected_score] + ' (%)'
     
     latest_date = pd.Series(df_scores[df_scores[selected_score] > 0]["date"]).values[-1]
     
@@ -422,37 +428,65 @@ def dashboard():
 
 
     # WRITE DESCRIPTION TEXTS
-    if selected_score == "bike_score"   :
+    if selected_score == "bike_score":
         st_info_text.markdown('''
-        In der Karte siehst Du wie sich Social Distancing auf die verschiedenen **{regionen}** in Deutschland auswirkt. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. Ein Wert von **100% entspricht dem Normal-Wert vor der COVID-Pandemie**, also bevor die Bürger zu Social Distancing aufgerufen wurden. Ein kleiner Wert weist darauf hin, dass in unserer Datenquelle eine Verringerung der Aktivität gemessen wurde. **Im Fall von Radfahrern ist ein erhöhtes Verkehrsaufkommen ein positiver Indikator für Social Distancing!** Mehr Menschen sind mit dem Fahrrad unterwegs anstatt mit anderen Verkehrsmitteln, bei denen Social Distancing schwierieger einzuhalten ist.
+        In der Karte siehst Du wie sich Social Distancing auf die verschiedenen **{regionen}** in Deutschland auswirkt. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. 
+        
+        Ein Wert von **100% entspricht dem Normal-Wert vor der COVID-Pandemie**, also bevor die Bürger zu Social Distancing aufgerufen wurden. Ein kleiner Wert weist darauf hin, dass in unserer Datenquelle eine Verringerung der Aktivität gemessen wurde. **Im Fall von Radfahrern ist ein erhöhtes Verkehrsaufkommen möglicherweise ein positiver Indikator für Social Distancing.** Mehr Menschen sind mit dem Fahrrad unterwegs anstatt mit anderen Verkehrsmitteln, bei denen Social Distancing schwierieger einzuhalten ist.
+        '''.format(regionen=use_states_select,datasource=selected_score_desc)
+    )
+    elif selected_score == "webcam_score":
+        st_info_text.markdown('''
+        In der Karte siehst Du wie sich Social Distancing auf die verschiedenen **{regionen}** in Deutschland auswirkt. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. 
+        
+        Für diesen Datensatz besitzen wir leider keine Referenz-Daten vor der COVID-Pandemie, daher werden **Absolutwerte** angezeigt und Werte zwischen {regionen}n lassen sich nicht vergleichen.
         '''.format(regionen=use_states_select,datasource=selected_score_desc)
     )
     else:
         st_info_text.markdown('''
-        In der Karte siehst Du wie sich Social Distancing auf die verschiedenen **{regionen}** in Deutschland auswirkt. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. Ein Wert von **100% entspricht dem Normal-Wert vor der COVID-Pandemie**, also bevor die Bürger zu Social Distancing aufgerufen wurden. Ein kleiner Wert weist darauf hin, dass in unserer Datenquelle eine Verringerung der Aktivität gemessen wurde, was ein guter Indikator für erfolgreich umgesetztes Social Distancing ist. **Weniger ist besser!**
+        In der Karte siehst Du wie sich Social Distancing auf die verschiedenen **{regionen}** in Deutschland auswirkt. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. 
+        
+        Ein Wert von **100% entspricht dem Normal-Wert vor der COVID-Pandemie**, also bevor die Bürger zu Social Distancing aufgerufen wurden. Ein kleiner Wert weist darauf hin, dass in unserer Datenquelle eine Verringerung der Aktivität gemessen wurde, was ein guter Indikator für erfolgreich umgesetztes Social Distancing ist. **Weniger ist besser!**
         '''.format(regionen=use_states_select,datasource=selected_score_desc)
     )
-    if selected_score2 == "bike_score"   :
+    
+    
+    if selected_score2 == "bike_score":
         st_timeline_desc.markdown('''
-        Hier kannst du den zeitlichen Verlauf der gewählten Datenquelle für verschiedene **{regionen}** in Deutschland vergleichen. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. **Ein Wert von 100% entspricht dem Normal-Wert vor der COVID-Pandemie, also bevor die Bürger zu Social Distancing aufgerufen wurden.** Ein kleiner Wert weist darauf hin, dass in unserer Datenquelle eine Verringerung der Aktivität gemessen wurde, was ein guter Indikator für erfolgreich umgesetztes Social Distancing ist. **Im Fall von Radfahrern ist ein erhöhtes Verkehrsaufkommen ein positiver Indikator für Social Distancing!** Mehr Menschen sind mit dem Fahrrad unterwegs anstatt mit anderen Verkehrsmitteln, bei denen Social Distancing schwierieger einzuhalten ist.
+        Hier kannst du den zeitlichen Verlauf der gewählten Datenquelle für verschiedene **{regionen}** in Deutschland vergleichen. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. 
+        
+        **Ein Wert von 100% entspricht dem Normal-Wert vor der COVID-Pandemie, also bevor die Bürger zu Social Distancing aufgerufen wurden.** Ein kleiner Wert weist darauf hin, dass in unserer Datenquelle eine Verringerung der Aktivität gemessen wurde, was ein guter Indikator für erfolgreich umgesetztes Social Distancing ist. **Im Fall von Radfahrern ist ein erhöhtes Verkehrsaufkommen möglicherweise ein positiver Indikator für Social Distancing.** Mehr Menschen sind mit dem Fahrrad unterwegs anstatt mit anderen Verkehrsmitteln, bei denen Social Distancing schwierieger einzuhalten ist.
         
         **Sieh doch mal nach wie die Lage in Deiner Region ist!**
         '''.format(regionen=use_states_select2,datasource=selected_score_desc2)
-    )
+        )
+    elif selected_score2 == "webcam_score":
+        st_timeline_desc.markdown('''
+        Hier kannst du den zeitlichen Verlauf der gewählten Datenquelle für verschiedene **{regionen}** in Deutschland vergleichen. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. 
+        
+        Für diesen Datensatz besitzen wir leider keine Referenz-Daten vor der COVID-Pandemie, daher werden **Absolutwerte** angezeigt und Werte zwischen {regionen}n lassen sich nicht vergleichen.
+        
+        **Sieh doch mal nach wie die Lage in Deiner Region ist!**
+        '''.format(regionen=use_states_select2,datasource=selected_score_desc2)
+        )
     else:
         st_timeline_desc.markdown('''
-        Hier kannst du den zeitlichen Verlauf der gewählten Datenquelle für verschiedene **{regionen}** in Deutschland vergleichen. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. **Ein Wert von 100% entspricht dem Normal-Wert vor der COVID-Pandemie, also bevor die Bürger zu Social Distancing aufgerufen wurden.** Ein kleiner Wert weist darauf hin, dass in unserer Datenquelle eine Verringerung der Aktivität gemessen wurde, was ein guter Indikator für erfolgreich umgesetztes Social Distancing ist. 
+        Hier kannst du den zeitlichen Verlauf der gewählten Datenquelle für verschiedene **{regionen}** in Deutschland vergleichen. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. 
+        
+        **Ein Wert von 100% entspricht dem Normal-Wert vor der COVID-Pandemie, also bevor die Bürger zu Social Distancing aufgerufen wurden.** Ein kleiner Wert weist darauf hin, dass in unserer Datenquelle eine Verringerung der Aktivität gemessen wurde, was ein guter Indikator für erfolgreich umgesetztes Social Distancing ist. 
         
         **Sieh doch mal nach wie die Lage in Deiner Region ist!**
         '''.format(regionen=use_states_select2,datasource=selected_score_desc2)
-    )
+        )
 
 
     try:
         st_map_header.subheader('Social Distancing Karte vom {}'.format( datetime.datetime.strptime(latest_date,"%Y-%m-%d").strftime("%d.%m.%Y") ))
     except:
         st_map_header.subheader('Social Distancing Karte vom {}'.format(latest_date))
-    st_legend.image("images/legende.png") 
+    
+    if selected_score != "webcam_score":
+        st_legend.image("images/legende.png") 
      
 
    
