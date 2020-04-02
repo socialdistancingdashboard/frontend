@@ -25,4 +25,4 @@ def parse_md_with_local_images(filename):
 
 def st_markdown(filename):
     with open(filename,'r') as f:
-        st.markdown(f.read())
+        st.markdown(f.read(), unsafe_allow_html=True)
