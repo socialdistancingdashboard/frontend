@@ -121,9 +121,11 @@ st.sidebar.markdown('''
 - [Tagesspiegel](https://www.tagesspiegel.de/wirtschaft/hackathon-im-netz-programmierer-tuefteln-an-loesungen-gegen-die-corona-krise/25670548.html)
 - [SWR](https://www.swr.de/swraktuell/wie-deutschland-das-coronavirus-hackt-wirvsvirus-hackathon-100.html)
 - [WDR](https://www1.wdr.de/nachrichten/themen/coronavirus/verkehr-innenstadt-corona-100.html)
+- [Tagesthemen](https://www.youtube.com/watch?v=gXxTrZAFx04&t=1560)
 - [Tagesschau](https://www.youtube.com/watch?v=donUKy8IGZw)
 - [tagesschau.de](https://www.tagesschau.de/investigativ/ndr-wdr/datenanalyse-oeffentliches-leben-corona-101.html)
 - [NDR](https://www.ndr.de/nachrichten/info/Corona-Besonders-die-Hamburger-befolgen-die-Kontaktsperre,coronavirus1006.html)
+- [Mitteldeutsche Zeitung](https://twitter.com/seem28/status/1245239792390090752)
 ''')
 
 st.sidebar.subheader("Kontakt")
