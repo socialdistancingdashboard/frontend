@@ -12,7 +12,7 @@ from io import BytesIO
 @st.cache(persist=True)
 def load_topojson():
     #url_topojson = 'https://raw.githubusercontent.com/AliceWi/TopoJSON-Germany/master/germany.json'
-    url_topojson = 'http://images.everyonecounts.de/germany.json'
+    url_topojson = 'https://images.everyonecounts.de/germany.json'
     r = requests.get(url_topojson)
     jsondump = r.json()
     county_names = []
@@ -79,7 +79,7 @@ def load_real_data():
     
 @st.cache()
 def get_map(df_scores,selected_score,selected_score_axis, selected_score_desc, use_states,latest_date):
-    url_topojson = 'http://images.everyonecounts.de/germany.json'
+    url_topojson = 'https://images.everyonecounts.de/germany.json'
     MAPHEIGHT = 640
     if use_states:
         features = 'states'
