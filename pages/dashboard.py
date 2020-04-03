@@ -78,8 +78,8 @@ def load_real_data():
     
 @st.cache()
 def get_map(df_scores,selected_score,selected_score_axis, selected_score_desc, use_states,latest_date):
-    url_topojson = 'https://raw.githubusercontent.com/AliceWi/TopoJSON-Germany/master/germany.json'
-    #url_topojson = 'https://images.everyonecounts.de/germany.json' # calling thus url does not work, triggers CORS warning in browser
+    #url_topojson = 'https://raw.githubusercontent.com/AliceWi/TopoJSON-Germany/master/germany.json'
+    url_topojson = 'https://images.everyonecounts.de/germany.json'
     MAPHEIGHT = 640
     if use_states:
         features = 'states'
