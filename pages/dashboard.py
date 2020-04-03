@@ -11,7 +11,8 @@ from io import BytesIO
 
 @st.cache(persist=True)
 def load_topojson():
-    url_topojson = 'https://raw.githubusercontent.com/AliceWi/TopoJSON-Germany/master/germany.json'
+    #url_topojson = 'https://raw.githubusercontent.com/AliceWi/TopoJSON-Germany/master/germany.json'
+    url_topojson = 'http://images.everyonecounts.de/germany.json'
     r = requests.get(url_topojson)
     jsondump = r.json()
     county_names = []
