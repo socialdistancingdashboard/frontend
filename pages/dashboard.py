@@ -31,7 +31,6 @@ def load_topojson():
 def load_real_data():
     response = requests.get('https://0he6m5aakd.execute-api.eu-central-1.amazonaws.com/prod')
     jsondump = response.json()["body"]
-    
     county_names, county_ids, state_names, state_ids = load_topojson()
     id_to_name = {cid:county_names[idx] for idx,cid in enumerate(county_ids)}
     
@@ -79,7 +78,8 @@ def load_real_data():
     
 @st.cache()
 def get_map(df_scores,selected_score,selected_score_axis, selected_score_desc, use_states,latest_date):
-    url_topojson = 'https://images.everyonecounts.de/germany.json'
+    url_topojson = 'https://raw.githubusercontent.com/AliceWi/TopoJSON-Germany/master/germany.json'
+    #url_topojson = 'https://images.everyonecounts.de/germany.json' # calling thus url does not work, triggers CORS warning in browser
     MAPHEIGHT = 640
     if use_states:
         features = 'states'
