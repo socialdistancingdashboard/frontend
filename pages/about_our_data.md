@@ -16,19 +16,19 @@ Google bietet über seinen Dienst Google Maps Transit die Funktion an, zu zeigen
 
 hystreet.com misst die Passantenfrequenz innerstädtischer Einzelhandelslagen mit Hilfe von Laserscannern an 117 Standorten in 57 Städten. Hystreet hat uns API-Zugriff gewährt und wir können daher sowohl auf stündlich aktualisierte Zahlen, als auch auf mehrere Jahre zurückliegende Daten zugreifen.
 
-![Hystreet Aufbau](http://images.everyonecounts.de/hystreet.jpg)
+![Hystreet Aufbau](https://images.everyonecounts.de/hystreet.jpg)
 
 ### Fußgänger auf öffentlichen Webcams
 Es gibt viele öffentliche Webcams, die belebte und beliebte Orte in unseren Städten zeigen. Durch Bilderkennungsprozesse werden Menschen auf den Bildern als solche erkannt und gezählt. Die Webcams werden zur Zeit stündlich abgefragt.
 
-![Beispiel Webcamauswertung](http://images.everyonecounts.de/webcam.jpg)
+![Beispiel Webcamauswertung](https://images.everyonecounts.de/webcam.jpg)
 
 ### Fahrradfahrer 
 **Basis:** [Eco-Compteur](https://www.eco-compteur.com/)
 
 In vielen Innenstädten werden Fahrradfahrer an automatisierten Messstellen gezählt und von [Eco-Compteur](https://www.eco-compteur.com/) online gestellt. Die Daten der 42 deutschen Messstellen werden für unseren Datenpool abgerufen. Beispiel: http://eco-public.com/public2/?id=100004595
 
-![Fahradzählstation](http://images.everyonecounts.de/fahrradzaehler.jpg)
+![Fahradzählstation](https://images.everyonecounts.de/fahrradzaehler.jpg)
 
 ### DB Züge 
 **Basis:** [Deutsche Bahn](http://bahn.hafas.de/bin/detect.exe/bin/query.exe/d)
@@ -38,7 +38,7 @@ Im den Diagrammen ist ein Anstieg bei den Zugausfällen am 2020-02-08/09 zu erke
 Man sieht in den letzten Tagen einen Anstieg in den Ausfällen bei allen "Zugtypen". Hier kann man von Corona-bedingten Ausfällen ausgehen.
 Neben der Gesamtauswahl aller Verbindungen ist es auch möglich nur bestimmte Typen von Verbindungen auswerten zu lassen.
 
-![Auswertung Bahndaten](http://images.everyonecounts.de/db_analyse.png)
+![Auswertung Bahndaten](https://images.everyonecounts.de/db_analyse.png)
 
 ### ÖPV Busse
 Ausgewertet werden mit dieser Auswahl nur die Daten der Deutschen Bahn, die sich auf Busverbindungen beziehen.
