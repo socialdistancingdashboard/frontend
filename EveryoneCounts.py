@@ -126,6 +126,7 @@ st.sidebar.markdown('''
 - [tagesschau.de](https://www.tagesschau.de/investigativ/ndr-wdr/datenanalyse-oeffentliches-leben-corona-101.html)
 - [NDR](https://www.ndr.de/nachrichten/info/Corona-Besonders-die-Hamburger-befolgen-die-Kontaktsperre,coronavirus1006.html)
 - [Mitteldeutsche Zeitung](https://twitter.com/seem28/status/1245239792390090752)
+- [Kommune21](https://www.kommune21.de/meldung_33697)
 ''')
 
 st.sidebar.subheader("Kontakt")
