@@ -1,0 +1,11 @@
+[browser]
+
+# Whether to send usage statistics to Streamlit.
+# Default: true
+gatherUsageStats = false
+
+[server]
+
+# Enables support for Cross-Origin Request Sharing, for added security.
+# Default: true
+#enableCORS = true
