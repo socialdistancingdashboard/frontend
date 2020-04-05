@@ -1,6 +1,7 @@
 # Das Projekt
 ## Was ist die Idee hinter dem Projekt?
-In der Situation mit den weit verbreiteten Regelungen um die Corona Pandemie einzugrenzen, hat sich Philip gefragt, ob man den Erfolg dieser Maßnahmen an öffentlich zugänglichen Daten erkennen kann. Aus dieser Idee und einem eigenen ersten tabellarischen Überblick, auf Basis von Google Places Daten ist das Projekt für den #WirvsVirus - Hackatron entstanden. 
+In der Situation mit den weit verbreiteten Regelungen um die Corona Pandemie einzugrenzen, hat sich Philip gefragt, ob man den Erfolg dieser Maßnahmen an öffentlich zugänglichen Daten erkennen kann. Aus dieser Idee und einem ersten tabellarischen Überblick, auf Basis von Google Places Daten ist das Projekt für den [#WirvsVirus-Hackathon](https://wirvsvirushackathon.org/) der Bundesregierung entstanden. 
+
 Die Idee hinter dem Dashboard war, für jeden verständlich darzustellen, ob und wie gut das Physical Distancing klappt. Weiterhin soll die breite Datenbasis aufbereitet zur Verfügung gestellt werden, um anderen Interessierten die Möglichkeit zu geben, eigene Auswertungen anzustellen.
 
 ## Für wen tun wir das? 
