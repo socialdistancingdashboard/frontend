@@ -70,6 +70,16 @@ def load_real_data():
     })
     
     # add scores
+    remove_scores = [
+                    "zug_score",
+                    "bus_score",
+                    "national_score",
+                    "suburban_score",
+                    "regional_score",
+                    "nationalExpress_score"
+                    ] # hacky way to filter out certain scores
+    scorenames = [s for s in scorenames if s not in remove_scores]
+    
     for scorename in scorenames:
         df_scores[scorename] = scorevalues[scorename]
     df_scores = df_scores.replace([np.inf, -np.inf], np.nan)
