@@ -237,7 +237,94 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, selected_
     return rule+chart
 
 
-def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_county_select, key, default_detail_index=0, default_score="hystreet_score"):
+def get_histograms(df_scores_in, selected_score, selected_score_desc, selected_score_axis):
+    df_scores = df_scores_in.copy()
+    
+    df_scores = df_scores[["date","name",selected_score]]
+    
+    df_tmp = df_scores.groupby("date").mean()[[selected_score]].dropna(axis=0,how="any").reset_index()
+    dates = [x.strftime("%d.%m.%Y") for x in sorted(list(set(df_tmp["date"])))]
+    idx2date = {v:i for v,i in enumerate(dates)}
+    
+    slider = st.slider("Wähle Datum zwischen {} und {}".format(idx2date[0],idx2date[len(dates)-1]), min_value=0, max_value=len(dates)-1, value=len(dates)-1, step=1, format="")
+    date = idx2date[slider]
+    st.write("Gewähltes Datum: **{}**".format(date))
+    st_median = st.empty()
+    
+    chart,median = make_histogram_chart(df_scores,date,selected_score,selected_score_desc,selected_score_axis)
+    if selected_score=="webcam_score":
+        st.write("Median: **{} Fußgänger**".format(median))
+    else:
+        st.write("Median: **{}%**".format(median))
+    return chart
+
+#@st.cache(allow_output_mutation=True)
+def make_histogram_chart(df_scores_in,date,selected_score,selected_score_desc,selected_score_axis):
+    '''
+    this is called from inside get_histogram so that the charts
+    can be cached.
+    '''
+    df_scores = df_scores_in.copy()
+    df_scores=df_scores.groupby(["name","date"]).mean().reset_index()
+    df_scores["date"] = df_scores["date"].apply(lambda x: x.strftime("%d.%m.%Y"))
+    df_scores = df_scores[df_scores["date"]==date]
+    
+    median = round(float(df_scores.median(skipna=True)),1)
+    
+    title= {
+        "text": ["", "{} am {}".format(selected_score_desc,date)], # use two lines as hack so the umlauts at Ö are not cut off
+        "subtitle": "EveryoneCounts.de",
+        "color": "black",
+        "subtitleColor": "lightgray",
+        "subtitleFontSize":12,
+        "subtitleFontWeight":"normal",
+        "fontSize":15,
+        "lineHeight":5,
+    }
+    
+    chart = alt.Chart(df_scores).mark_bar().encode(
+        alt.X(
+            selected_score+":Q",
+            title=selected_score_axis,
+            bin=alt.Bin(extent=[0, 200], step=10),
+            ),
+        alt.Y(
+            'count():Q',
+            title="Anzahl Landkreise",
+            #axis = alt.Axis(format="%.2f")
+            ),
+        color = alt.Color(
+            selected_score, 
+            scale=alt.Scale(
+                domain=(200, 0), 
+                scheme='redyellowgreen'),
+                legend=None,
+            ),
+        ).properties(
+            width='container',
+            height=400,
+            title=title
+        )
+    
+    rule100 = alt.Chart(df_scores).mark_rule(color='lightgray').encode(
+        x="a:Q"
+    ).transform_calculate(
+        a="100"
+    )
+    
+    rulemean = alt.Chart(df_scores).mark_rule(color='black').encode(
+        #x='median('+selected_score+'):Q',
+        x="a:Q",
+        size=alt.value(2),
+        tooltip=[alt.Tooltip('a:Q', title="Median")]
+    ).transform_calculate(
+        a=str(median)
+    )
+    return (rule100+chart+rulemean,median)
+
+
+
+def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_county_select, allow_detail_select, key, default_detail_index=0, default_score="hystreet_score"):
     df_scores = df_scores_in.copy()
     
     # get counties
@@ -247,11 +334,14 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
     state_name_to_id = {state_names[idx]:cid for idx,cid in enumerate(state_ids)}
 
     # LEVEL OF DETAIL SELECT
-    use_states_select  = st.selectbox('Detailgrad:', 
-                                    ('Bundesländer', 'Landkreise'), 
-                                    index =default_detail_index,
-                                    key = key
-                                    )
+    if allow_detail_select:
+        use_states_select  = st.selectbox('Detailgrad:', 
+                                        ('Bundesländer', 'Landkreise'), 
+                                        index =default_detail_index,
+                                        key = key
+                                        )
+    else:
+        use_states_select =  'Landkreise'
     use_states = use_states_select == 'Bundesländer'
     
     # SCORE SELECT
@@ -402,6 +492,7 @@ def dashboard():
                                         scorenames_desc, 
                                         scorenames_axis, 
                                         allow_county_select=False,
+                                        allow_detail_select=True,
                                         key='map',
                                         default_detail_index=0,
                                         default_score="gmap_score"
@@ -416,6 +507,7 @@ def dashboard():
                                         scorenames_desc, 
                                         scorenames_axis, 
                                         allow_county_select=True,
+                                        allow_detail_select=True,
                                         key='timeline',
                                         default_detail_index=1,
                                         default_score="hystreet_score"
@@ -506,7 +598,30 @@ def dashboard():
         timeline2 = timeline.copy() # otherwise streamlit gives a Cached Object Mutated warning
         st_timeline.altair_chart(timeline2)
 
-        
+    # DRAW HISTOGRAMS
+    # ===============
+    # Selection box for the timeline
+    st.subheader("Verteilung über alle vefügbaren Landkreise")
+    st_histo_desc = st.empty()
+    
+    df_scores3, selected_score3, selected_score_desc3, selected_score_axis3, use_states3, use_states_select3, countys3, latest_date3 = detail_score_selector(df_scores_full, 
+                                        scorenames_desc, 
+                                        scorenames_axis, 
+                                        allow_county_select=False,
+                                        allow_detail_select=False,
+                                        key='histo',
+                                        default_score="gmap_score"
+                                        )
+                                        
+    st_histo_desc.markdown('''
+        Hier kannst du einen Überblick bekommen wie die Verteilung über alle **{datasource}** für alle Landkreise (für die wir Daten vorliegen haben) ist.
+
+        Du kannst sowohl die Datenquelle als auch das zu betrachtende Datum auswählen und so ein Gefühl dafür bekommen, wie sich die Verteilung entwickelt. Die schwarze Linie ist der **Median**, das heißt jeweils die Hälfte aller Landkreise hat einen höheren beziehungswiese niedrigeren Score als dieser Wert.
+        '''.format(datasource=selected_score_desc3)
+        )
+    c=get_histograms(df_scores3, selected_score3, selected_score_desc3, selected_score_axis3)
+    st.altair_chart(c)
+    
     # FOOTER
     # ======
     st.subheader("Unsere Datenquellen")
