@@ -268,7 +268,7 @@ def get_histograms(df_scores_in, selected_score, selected_score_desc, selected_s
         st.write("Median: **{}%**".format(median))
     return chart
 
-#@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True)
 def make_histogram_chart(df_scores_in,date,selected_score,selected_score_desc,selected_score_axis):
     '''
     this is called from inside get_histogram so that the charts
@@ -292,6 +292,13 @@ def make_histogram_chart(df_scores_in,date,selected_score,selected_score_desc,se
         "lineHeight":5,
     }
     
+    if selected_score=="webcam_score":
+        scale=alt.Scale(domain=(200, 0))
+    else:
+        scale=alt.Scale(
+                domain=(200, 0), 
+                scheme="redyellowgreen")
+    
     chart = alt.Chart(df_scores).mark_bar().encode(
         alt.X(
             selected_score+":Q",
@@ -305,10 +312,8 @@ def make_histogram_chart(df_scores_in,date,selected_score,selected_score_desc,se
             ),
         color = alt.Color(
             selected_score, 
-            scale=alt.Scale(
-                domain=(200, 0), 
-                scheme='redyellowgreen'),
-                legend=None,
+            scale=scale,
+            legend=None,
             ),
         ).properties(
             width='container',
