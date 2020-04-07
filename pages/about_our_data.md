@@ -76,4 +76,4 @@ Da jede Datenquelle andere Daten bereitstellt und sich die Granularität untersc
 
 ## Datenzugriff
 
-Wenn Du als Data Scientist, Datenjournalist oder auch einfach "interessierter Bürger" Zugriff auf die Rohdaten des Dashboards möchtest um Deine eigenen Analysen anzustellen musst Du nicht mal fragen, die Daten kannst Du einfach [hier herunterladen](https://im6qye3mc3.execute-api.eu-central-1.amazonaws.com/prod). Eine API ist in Arbeit.
+Wenn Du als Data Scientist, Datenjournalist oder auch einfach "interessierter Bürger" Zugriff auf die Rohdaten des Dashboards möchtest um Deine eigenen Analysen anzustellen musst Du nicht mal fragen, die Daten kannst Du einfach [hier herunterladen](https://im6qye3mc3.execute-api.eu-central-1.amazonaws.com/prod). Zudem gibt es einen Web Feature Service (WFS) mit den Daten unter [geoserver.everyonecounts.de](https://geoserver.everyonecounts.de/). Eine API für Zugriff auf die Rohdaten ist in Arbeit.
