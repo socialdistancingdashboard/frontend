@@ -247,42 +247,38 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, selected_
     return rule+chart
 
 
-def get_histograms(df_scores_in, selected_score, selected_score_desc, selected_score_axis):
-    df_scores = df_scores_in.copy()
-    
-    df_scores = df_scores[["date","name",selected_score]]
-    
-    df_tmp = df_scores.groupby("date").mean()[[selected_score]].dropna(axis=0,how="any").reset_index()
-    dates = [x.strftime("%d.%m.%Y") for x in sorted(list(set(df_tmp["date"])))]
-    idx2date = {v:i for v,i in enumerate(dates)}
-    
-    slider = st.slider("Wähle Datum zwischen {} und {}".format(idx2date[0],idx2date[len(dates)-1]), min_value=0, max_value=len(dates)-1, value=len(dates)-1, step=1, format="")
-    date = idx2date[slider]
-    st.write("Gewähltes Datum: **{}**".format(date))
-    st_median = st.empty()
-    
-    chart,median = make_histogram_chart(df_scores,date,selected_score,selected_score_desc,selected_score_axis)
-    if selected_score=="webcam_score":
-        st.write("Median: **{} Fußgänger**".format(median))
-    else:
-        st.write("Median: **{}%**".format(median))
-    return chart
-
 @st.cache(allow_output_mutation=True)
-def make_histogram_chart(df_scores_in,date,selected_score,selected_score_desc,selected_score_axis):
+def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_score_axis):
     '''
     this is called from inside get_histogram so that the charts
     can be cached.
     '''
+    
+    # prepare dataframe
     df_scores = df_scores_in.copy()
-    df_scores=df_scores.groupby(["name","date"]).mean().reset_index()
-    df_scores["date"] = df_scores["date"].apply(lambda x: x.strftime("%d.%m.%Y"))
-    df_scores = df_scores[df_scores["date"]==date]
+    df_scores = df_scores[["date","name",selected_score]] # throw other scores away
+    df_scores = df_scores.dropna(axis=0,how="any") # remove rows with NaN
     
-    median = round(float(df_scores.median(skipna=True)),1)
+    df_scores=df_scores.groupby(["name","date"]).mean().reset_index() # daily average in case of multiple datapoints per day
+    df_scores["date"] = pd.to_datetime(df_scores["date"]) # make sure date column is datetime
+    df_scores["date_str"] = df_scores["date"].apply(lambda x: x.strftime("%Y-%m-%d")) # date string column
+     
+    # use a date_id for lookup purposes
+    dates = sorted(list(set(df_scores["date_str"])))
+    date2idx = {i:v for v,i in enumerate(dates)}
+    def date2id(x):
+        try:
+            return date2idx[x]
+        except:
+            return np.nan
+    df_scores["date_id"] = df_scores["date_str"].apply(lambda x: date2id(str(x)))
     
+    # median datframe
+    df_median = df_scores.groupby("date").median().reset_index()
+    
+    # plot title
     title= {
-        "text": ["", "{} am {}".format(selected_score_desc,date)], # use two lines as hack so the umlauts at Ö are not cut off
+        "text": ["", "{}".format(selected_score_desc)], # use two lines as hack so the umlauts at Ö are not cut off
         "subtitle": "EveryoneCounts.de",
         "color": "black",
         "subtitleColor": "lightgray",
@@ -292,6 +288,7 @@ def make_histogram_chart(df_scores_in,date,selected_score,selected_score_desc,se
         "lineHeight":5,
     }
     
+    # special treatment for webcam score b/c it uses absolute values
     if selected_score=="webcam_score":
         scale=alt.Scale(domain=(200, 0))
     else:
@@ -299,7 +296,15 @@ def make_histogram_chart(df_scores_in,date,selected_score,selected_score_desc,se
                 domain=(200, 0), 
                 scheme="redyellowgreen")
     
-    chart = alt.Chart(df_scores).mark_bar().encode(
+    # Here comes the magic: a selector!
+    selector = alt.selection_single(empty="none", fields=['date_id'], on='mouseover', nearest=True, init={'date_id': len(dates)-2})
+    
+    
+    #--- Altair charts from here on ---#
+    # Histogram chart
+    chart = alt.Chart(df_scores).mark_bar(
+            #clip=True
+        ).encode(
         alt.X(
             selected_score+":Q",
             title=selected_score_axis,
@@ -315,27 +320,104 @@ def make_histogram_chart(df_scores_in,date,selected_score,selected_score_desc,se
             scale=scale,
             legend=None,
             ),
+        ).transform_filter(
+            selector
         ).properties(
             width='container',
-            height=400,
+            height=300,
             title=title
         )
     
-    rule100 = alt.Chart(df_scores).mark_rule(color='lightgray').encode(
-        x="a:Q"
-    ).transform_calculate(
-        a="100"
+    # Rule at 100%
+    rule100 = alt.Chart(df_scores).mark_rule(color='lightgray',size=2).encode(
+            x="a:Q"
+        ).transform_calculate(
+            a="100"
+        )
+    
+    # Rule for the median
+    rulemedian = alt.Chart(df_median).mark_rule(color='#F63366').encode(
+        x=selected_score+":Q",
+        size=alt.value(3),
+        tooltip=[alt.Tooltip(selected_score+':Q', title="Median")]
+    ).transform_filter(
+            selector
     )
     
-    rulemean = alt.Chart(df_scores).mark_rule(color='black').encode(
-        #x='median('+selected_score+'):Q',
-        x="a:Q",
-        size=alt.value(2),
-        tooltip=[alt.Tooltip('a:Q', title="Median")]
-    ).transform_calculate(
-        a=str(median)
-    )
-    return (rule100+chart+rulemean,median)
+    # median plot
+    median_points =alt.Chart(df_median).mark_point(
+            filled=True, 
+            size=150,
+            color="gray",
+        ).encode(
+            alt.X("date:T", axis=alt.Axis(title='Datum', format=("%d %b"))),
+            alt.Y(selected_score+':Q', title="Median "+selected_score_axis),
+            tooltip=[
+                alt.Tooltip("date:T", title="Datum"),
+                alt.Tooltip(selected_score+":Q", title="Median")
+                ]
+        ).properties(
+                width='container',
+                height=180,
+                title= {
+                    "text": "Wähle ein Datum:", 
+                    "color": "black",
+                    "fontWeight":"normal",
+                    "fontSize":12
+                }
+        ).add_selection(
+            selector
+        )
+    median_line =alt.Chart(df_median).mark_line(
+            point=False,
+            color="gray",
+            size=1
+        ).encode(
+            alt.X("date:T"),
+            alt.Y(selected_score+':Q'),
+        ).properties(
+            width='container',
+        )
+    median_selected =alt.Chart(df_median).mark_point(
+            filled=True, 
+            size=400,
+            color="#F63366",
+            opacity=0.7
+        ).encode(
+            alt.X("date:T"),
+            alt.Y(selected_score+':Q'),
+        ).properties(
+            width='container',
+        ).transform_filter(
+            selector
+        )
+    median_selected_rule =alt.Chart(df_median).mark_rule(
+            point=False,
+            color="gray",
+            size=1,
+            opacity=1
+        ).encode(
+            alt.X("date:T"),
+        ).properties(
+            width='container',
+        ).transform_filter(
+            selector
+        )
+    median_selected_rule2 =alt.Chart(df_median).mark_rule(
+            point=False,
+            color="#F63366",
+            size=1,
+            opacity=1
+        ).encode(
+            alt.Y(selected_score+":Q"),
+        ).properties(
+            width='container',
+        ).transform_filter(
+            selector
+        )
+    
+    
+    return (rule100+chart+rulemedian & median_selected_rule+median_line+median_points+median_selected+median_selected_rule2)
 
 
 
@@ -444,7 +526,7 @@ def dashboard():
                 margin:auto;
             }
             div.stVegaLiteChart, fullScreenFrame {
-                width:99%;
+                width:89%;
             }
             .stSelectbox div[data-baseweb="select"]>div,
             .stMultiSelect div[data-baseweb="select"]>div{
@@ -616,7 +698,7 @@ def dashboard():
     # DRAW HISTOGRAMS
     # ===============
     # Selection box for the timeline
-    st.subheader("Verteilung über alle vefügbaren Landkreise")
+    st.subheader("Verteilung über alle verfügbaren Landkreise")
     st_histo_desc = st.empty()
     
     df_scores3, selected_score3, selected_score_desc3, selected_score_axis3, use_states3, use_states_select3, countys3, latest_date3 = detail_score_selector(df_scores_full, 
@@ -625,17 +707,20 @@ def dashboard():
                                         allow_county_select=False,
                                         allow_detail_select=False,
                                         key='histo',
-                                        default_score="gmap_score"
+                                        default_score="hystreet_score"
                                         )
                                         
     st_histo_desc.markdown('''
-        Hier kannst du einen Überblick bekommen wie die Verteilung über alle **{datasource}** für alle Landkreise (für die wir Daten vorliegen haben) ist.
-
-        Du kannst sowohl die Datenquelle als auch das zu betrachtende Datum auswählen und so ein Gefühl dafür bekommen, wie sich die Verteilung entwickelt. Die schwarze Linie ist der **Median**, das heißt jeweils die Hälfte aller Landkreise hat einen höheren beziehungswiese niedrigeren Score als dieser Wert.
-        '''.format(datasource=selected_score_desc3)
+        Hier kannst Du einen Überblick bekommen, wie die Verteilung der Daten über **{datasource}** für alle verfügbaren Landkreise ist. Du kannst die Datenauswahl weiter unten im Menü ändern. 
+        
+        Die pinke Linie ist der **Median**, das heißt jeweils die Hälfte aller Landkreise hat einen höheren beziehungswiese niedrigeren Score als dieser Wert. Im unteren Graph ist der zeitliche Verlauf des Medians dargestellt. **In diesem Graph kannst du das Datum auswählen, für welches Dir die Verteilung über alle Landkreise angezeigt wird.**
+        '''.format(datasource=selected_score_desc3), unsafe_allow_html=True
         )
     c=get_histograms(df_scores3, selected_score3, selected_score_desc3, selected_score_axis3)
     st.altair_chart(c)
+    st.markdown('''
+        Zur zeitlichen Einordung: Die [Vereinbarung zwischen der Bundesregierung und den Regierungschefinnen und Regierungschefs der Bundesländer angesichts der Corona-Epidemie in Deutschland](https://www.bundeskanzlerin.de/bkin-de/aktuelles/vereinbarung-zwischen-der-bundesregierung-und-den-regierungschefinnen-und-regierungschefs-der-bundeslaender-angesichts-der-corona-epidemie-in-deutschland-1730934) wurde am 16. März veröffentlicht.
+    ''')
     
     # FOOTER
     # ======
