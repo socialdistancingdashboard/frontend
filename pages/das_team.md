@@ -65,3 +65,6 @@ Melde Dich am Besten über Twitter bei [@DistancingDash](https://twitter.com/dis
 Wenn Du als Data Scientist, Datenjournalist oder auch einfach "interessierter Bürger" Zugriff auf die Rohdaten des Dashboards möchtest um Deine eigenen Analysen anzustellen musst Du nicht einmal fragen. Die Daten kannst Du ganz einfach [hier herunterladen](https://im6qye3mc3.execute-api.eu-central-1.amazonaws.com/prod) (es gilt die [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt)). Zudem gibt es einen Web Feature Service (WFS) mit den Daten unter [geoserver.everyonecounts.de](https://geoserver.everyonecounts.de/). Eine API für Zugriff auf die Rohdaten ist in Arbeit.
 
 
+<!-- Matomo Image Tracker-->
+<img src="https://matomo.everyonecounts.de/matomo.php?idsite=1&amp;rec=1&amp;action_name=das_team" style="border:0" alt="" />
+<!-- End Matomo -->

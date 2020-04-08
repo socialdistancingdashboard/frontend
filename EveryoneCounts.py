@@ -100,13 +100,6 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
     
- # tracking javascript
-st.markdown("""   
-<!-- Matomo Image Tracker-->
-<img src="https://matomo.everyonecounts.de/matomo.php?idsite=1&amp;rec=1&amp;action_name=Dashboard" style="border:0" alt="" />
-<!-- End Matomo -->
-""", unsafe_allow_html=True)
-
 # sidebar footer
 st.sidebar.markdown("""
 

@@ -61,3 +61,6 @@ Hierzu stellen wir **allen gesellschaftlichen Akteuren** ein **intuitives, daten
 
 Um die Wirksamkeit von Maßnahmen zu bewerten, ist es zudem wichtig, den Trend zu sehen. Dazu bietet unsere GUI neben dem tagesaktuellen Score auch die Anzeige historischer Daten an. Für besonders interessierte User können weitere Datenquellen in einem Dropdown Menü ausgewählt werden, um relevante Zusammenhänge selber analysieren zu können. Momentan angedachte und teilweise bereits implementierte Features sind Wetterdaten des jeweiligen Zeitpunktes, sowie die Anzahl der mit Corona infizierten Menschen, wobei hier die zweiwöchige Inkubationszeit als Timelag herausgerechnet wird.
 
+<!-- Matomo Image Tracker-->
+<img src="https://matomo.everyonecounts.de/matomo.php?idsite=1&amp;rec=1&amp;action_name=about_us" style="border:0" alt="" />
+<!-- End Matomo -->
