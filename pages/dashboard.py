@@ -123,7 +123,7 @@ def get_map(df_scores,selected_score,selected_score_axis, selected_score_desc, u
         "lineHeight":5,
     }
     if selected_score=="webcam_score":
-        colorscale = alt.Scale(scheme='goldgreen')
+        colorscale = alt.Scale(scheme='blues')
     else:
         colorscale = alt.Scale(domain=(200, 0), scheme='redyellowgreen')
     
