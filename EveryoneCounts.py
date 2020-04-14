@@ -39,12 +39,12 @@ st.sidebar.markdown("<br>", unsafe_allow_html=True)
 menuitems = {'Dashboard':1,
              'Die Daten':2,
              'Das Projekt':3,
-             'Das Team':4
+             'Das Team':4,
+             'Impressum':5
             }
 menu = st.sidebar.radio('',list(menuitems.keys()), index=0)
 
 # hack in some css to style the menu
-# note: unsafe_allow_html is planned to be deprecated in future streamlit
 # double braces for .format to work
 st.markdown("""
     <style type='text/css'>
@@ -81,6 +81,10 @@ st.markdown("""
             border-radius:5px;
         }
         
+        ul {
+            line-height:1.4em;
+        }
+        
         /* improve visibility of collapsed menu button on mobile */
         .open-iconic[data-glyph="chevron-right"]:after {
             content: "Menü";
@@ -101,13 +105,8 @@ st.markdown("""
     """, unsafe_allow_html=True)
     
 # sidebar footer
-st.sidebar.markdown("""
-
-
---- 
-
-""", unsafe_allow_html=True)
-st.sidebar.subheader("weitere Infos")
+st.sidebar.markdown("---")
+st.sidebar.subheader("Weitere Infos")
 st.sidebar.markdown('''
 - [@DistancingDash](https://twitter.com/distancingdash/)
 - [Youtube](https://www.youtube.com/watch?v=pDgcbE-c31c&feature=youtu.be)
@@ -143,6 +142,5 @@ elif menuitems[menu]==3:
     dashboard_pages.st_markdown('pages/about_us.md')
 elif menuitems[menu]==4:
     dashboard_pages.st_markdown('pages/das_team.md')
-    pass
-#elif menu=='Impressum':
-#    dashboard_pages.impressum()
+elif menuitems[menu]==5:
+    dashboard_pages.st_markdown('pages/impressum.md')
