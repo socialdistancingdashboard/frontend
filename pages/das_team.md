@@ -54,7 +54,7 @@ div.team>a[href*="twitter"]:after{
     <div>Florian Jungbluth</div>
     <div>Gabriel Jäger</div>
     <div>Jochen Schäfer</div>
-    <div>Julius Bihler</div>
+    <a href="https://www.linkedin.com/in/julius-bihler-a34503170/">Julius Bihler</a>
     <div>Jürgen Jasperneite</div>
     <a href="https://www.linkedin.com/in/leonard-eckert/">Leonard Eckert</a>
     <div>Luca Koroll</div>
