@@ -30,31 +30,6 @@ In vielen Innenstädten werden Fahrradfahrer an automatisierten Messstellen gez�
 
 ![Fahradzählstation](https://images.everyonecounts.de/fahrradzaehler.jpg)
 
-### DB Züge 
-**Basis:** [Deutsche Bahn](http://bahn.hafas.de/bin/detect.exe/bin/query.exe/d)
-Die Deutsche Bahn bietet ihre Daten zu Zugverbindungen via API an. Diese Daten können herangezogen werden, um z.B. ausgefallene Verbindungen / Halte auszuweisen. Um die Aussagefähigkeit zu unterstreichen anbei ein Beispiel aus Februar:
-
-Im den Diagrammen ist ein Anstieg bei den Zugausfällen am 2020-02-08/09 zu erkennen. Hier hat das Sturmtief Sabrina ganze Arbeit geleistet.
-Man sieht in den letzten Tagen einen Anstieg in den Ausfällen bei allen "Zugtypen". Hier kann man von Corona-bedingten Ausfällen ausgehen.
-Neben der Gesamtauswahl aller Verbindungen ist es auch möglich nur bestimmte Typen von Verbindungen auswerten zu lassen.
-
-![Auswertung Bahndaten](https://images.everyonecounts.de/db_analyse.png)
-
-### ÖPV Busse
-Ausgewertet werden mit dieser Auswahl nur die Daten der Deutschen Bahn, die sich auf Busverbindungen beziehen.
-
-### ÖPV IC-Züge
-Ausgewertet werden mit dieser Auswahl nur die Daten der Deutschen Bahn, die sich auf Fernverbindungen beziehen, ohne ICE Verbindungen.
-
-### ÖPV Nahverkehr
-Ausgewertet werden mit dieser Auswahl nur die Daten der Deutschen Bahn, die sich auf den Nahverkehr beziehen.
-
-### ÖPV Regionalzüge
-Ausgewertet werden mit dieser Auswahl nur die Daten für die Regionalzüge aus den Daten der Deutschen Bahn.
-
-### ÖPV ICE-Züge
-Mit dieser Auswahl werden die ICE Verbindungen der Deutschen Bahn ausgewertet.
-
 ## weitere Daten die schon aggregiert werden
 ### Lemgo Digital
 **Basis:** [Lemgo Digital - Frauenhofer IOSB-INA](https://lemgo-digital.de/index.php/de/)
