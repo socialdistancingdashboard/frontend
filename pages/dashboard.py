@@ -9,7 +9,7 @@ import requests
 from PIL import Image
 from io import BytesIO
 
-@st.cache(persist=True)
+@st.cache(ttl=43200) # time-to-live: 12h
 def load_topojson():
     #url_topojson = 'https://raw.githubusercontent.com/AliceWi/TopoJSON-Germany/master/germany.json'
     url_topojson = 'https://images.everyonecounts.de/germany.json'
@@ -27,7 +27,7 @@ def load_topojson():
         state_ids.append(state["id"])
     return county_names, county_ids, state_names, state_ids
 
-@st.cache(persist=True, ttl=43200) # time-to-live: 12h
+@st.cache(ttl=43200) # time-to-live: 12h
 def load_real_data():
     response = requests.get('https://im6qye3mc3.execute-api.eu-central-1.amazonaws.com/prod')
     jsondump = response.json()["body"]
@@ -86,7 +86,7 @@ def load_real_data():
     
     return df_scores, scorenames
     
-@st.cache()
+@st.cache(ttl=43200) # time-to-live: 12h
 def get_map(df_scores,selected_score,selected_score_axis, selected_score_desc, use_states,latest_date):
     #url_topojson = 'https://raw.githubusercontent.com/AliceWi/TopoJSON-Germany/master/germany.json'
     url_topojson = 'https://images.everyonecounts.de/germany.json'
@@ -185,7 +185,7 @@ def get_map(df_scores,selected_score,selected_score_axis, selected_score_desc, u
         c = alt.layer(basemap, layer, overlaymap).configure_view(strokeOpacity=0)
     return c
     
-@st.cache()
+@st.cache(ttl=43200) # time-to-live: 12h
 def get_timeline_plots(df_scores, selected_score, selected_score_axis, selected_score_desc, use_states, countys):
     
     title= {
@@ -246,8 +246,7 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, selected_
     )
     return rule+chart
 
-
-@st.cache(allow_output_mutation=True)
+@st.cache(ttl=43200,allow_output_mutation=True) # time-to-live: 12h
 def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_score_axis):
     '''
     this is called from inside get_histogram so that the charts
