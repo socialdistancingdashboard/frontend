@@ -1,15 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import streamlit as st
-import pandas as pd
-import numpy as np
-import altair as alt
-import datetime
-import urllib
-import json
-import requests
-from PIL import Image
-from io import BytesIO
 
 from pages import dashboard
 # MAIN MENU HTML (this needs to be the first markdown block for the css to work!)
@@ -70,7 +61,7 @@ fullScreenFrame {
 }
 .stVegaLiteChart {
     min-width:200px;
-    max-width:850px;
+    max-width:700px;
     width:80%;
     margin:auto !important;
     padding:0px;
@@ -102,17 +93,21 @@ fullScreenFrame {
 
 #nav{
   max-width:100vw;
-  line-height: 3.5em;
+  display: flex;
+  flex-wrap: wrap;
+  align-content:space-between;
 }
 
 #nav a{
   background:#FCBFCF;
-	padding:10px;
-	border-radius:4px;
-	color:black;
-	text-decoration:none;
-	box-shadow:#ccc 0px 1px 3px;
+  padding:10px;
+  border-radius:4px;
+  color:black;
+  text-decoration:none;
+  box-shadow:#ccc 0px 1px 3px;
   margin-left: 0.8em;
+  margin-top:0.8em;
+  
 
 }
 #nav a#dashboard {
@@ -201,3 +196,38 @@ st.markdown("""
     <h1 style="font-size:5rem; font-weight:bold; text-align:center;color:#000;">Dashboard</h1>
 """, unsafe_allow_html=True)
 dashboard.dashboard()
+
+# FOOTER
+st.markdown("""
+<hr>
+<div id="footer">
+    <div>
+    <a href="https://blog.everyonecounts.de/impressum/">Impressum</a>
+    </div>
+    <div>
+    <a href="https://twitter.com/DistancingDash">Twitter</a>
+    <a href="https://github.com/socialdistancingdashboard/">Github</a> 
+    <a href="mailto:kontakt@everyonecounts.de">E-Mail</a>
+    <a href="https://blog.everyonecounts.de/">Blog</a>
+    </div>
+</div>
+<hr>
+
+<style type="text/css">
+#footer{
+  display:flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  width:100%;
+}
+p>a, #footer div a {
+    color: #e22658 !important; 
+}
+#footer div a{
+    margin-right:8px;
+    margin-left:8px;
+    font-weight:bold;
+}
+</style>
+""", unsafe_allow_html=True)
