@@ -500,41 +500,11 @@ def dashboard():
     # thus later elements (e.g. county selector) can influence
     # earlier elements (the map) because they can appear earlier in 
     # the code without appearing earlier in the webpage
-    st.title("EveryoneCounts")
-    st.header("Das Social Distancing Dashboard")
+    #st.title("EveryoneCounts")
+    #st.header("Das Social Distancing Dashboard")
     st_map_header      = st.empty()
     st_info_text       = st.empty()
    
-
-    # Insert custom CSS
-    # - prevent horizontal scrolling on mobile
-    # - restrict images to container width
-    # - restrict altair plots to container width
-    # - make inputs better visible
-    st.markdown("""
-        <style type='text/css'>
-            .block-container>div {
-                width:100% !important;
-                overflow:hidden !important;
-            }
-            .image-container {
-                width: 99%;
-            }
-            img {
-                max-width: 99%;
-                margin:auto;
-            }
-            div.stVegaLiteChart, fullScreenFrame {
-                width:89%;
-            }
-            .stSelectbox div[data-baseweb="select"]>div,
-            .stMultiSelect div[data-baseweb="select"]>div{
-                border:1px solid #fcbfcf;
-            }
-        </style>
-    """, unsafe_allow_html=True)
-    
-    
     # get score data
     df_scores_full, scorenames = load_real_data()
    
@@ -723,8 +693,8 @@ def dashboard():
     
     # FOOTER
     # ======
-    st.subheader("Unsere Datenquellen")
-    st.image('images/datenquellen.png')
+    #st.subheader("Unsere Datenquellen")
+    #st.image('images/datenquellen.png')
     
     # tracking javascript
     st.markdown("""   
