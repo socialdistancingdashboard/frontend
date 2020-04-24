@@ -431,7 +431,7 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
 
     # LEVEL OF DETAIL SELECT
     if allow_detail_select:
-        use_states_select  = st.selectbox('Detailgrad:', 
+        use_states_select  = st.radio('Detailgrad:', 
                                         ('Bundesländer', 'Landkreise'), 
                                         index =default_detail_index,
                                         key = key
