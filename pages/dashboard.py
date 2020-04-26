@@ -525,7 +525,8 @@ def dashboard():
         "regional_score":"ÖPV Regionalzüge",
         "nationalExpress_score":"ÖPV ICE-Züge",
         "webcam_score":"Fußgänger auf öffentlichen Webcams",
-        "tomtom_score":"Autoverkehr"
+        "tomtom_score":"Autoverkehr",
+        "airquality_score":"Luftqualität"
         }
     # very short axis labels for each score
     scorenames_axis_manual = {
@@ -540,7 +541,8 @@ def dashboard():
         "regional_score":"Regionalzüge",
         "nationalExpress_score":"ICE-Züge",
         "webcam_score":"Fußgänger",
-        "tomtom_score":"Autoverkehr"
+        "tomtom_score":"Autoverkehr",
+        "airquality_score":"Luftqualität"
         }
     
     # for scores not in the hardcoded list above
