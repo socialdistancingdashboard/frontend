@@ -52,8 +52,11 @@ def load_real_data():
     # loop over data
     for (date, row) in list(jsondump.items()):
         for cid, scores in row.items():
+            try:
+                names.append(id_to_name[cid])
+            except:
+                continue
             ids.append(cid)
-            names.append(id_to_name[cid])
             dates.append(date)
             for scorename in scorenames:
                 if scorename in scores:
@@ -61,6 +64,7 @@ def load_real_data():
                 else:
                     scorevalue = None
                 scorevalues[scorename].append(scorevalue)
+            
     
     # create dataframe
     df_scores = pd.DataFrame({
