@@ -8,6 +8,7 @@ import json
 import requests
 from PIL import Image
 from io import BytesIO
+from .get_airquality_desc import get_airquality_desc
 
 @st.cache(ttl=43200) # time-to-live: 12h
 def load_topojson():
@@ -31,7 +32,7 @@ def load_topojson():
 def load_real_data():
     response = requests.get('https://im6qye3mc3.execute-api.eu-central-1.amazonaws.com/prod')
     jsondump = response.json()["body"]
-    county_names, county_ids, state_names, state_ids = load_topojson()
+    county_names, county_ids,_,_ = load_topojson()
     id_to_name = {cid:county_names[idx] for idx,cid in enumerate(county_ids)}
     
     # get names for all scores
@@ -73,8 +74,8 @@ def load_real_data():
         "date": dates
     })
     
-    # add scores
-    remove_scores = [
+    # add scores (but not all)
+    hidden_scores = [
                     "zug_score",
                     "bus_score",
                     "national_score",
@@ -82,11 +83,13 @@ def load_real_data():
                     "regional_score",
                     "nationalExpress_score"
                     ] # hacky way to filter out certain scores
-    scorenames = [s for s in scorenames if s not in remove_scores]
+    scorenames = [s for s in scorenames if s not in hidden_scores]
     
     for scorename in scorenames:
         df_scores[scorename] = scorevalues[scorename]
     df_scores = df_scores.replace([np.inf, -np.inf], np.nan)
+    
+    df_scores["airquality_desc"] = df_scores.apply(lambda x: get_airquality_desc(x["airquality_score"]),axis=1)
     
     return df_scores, scorenames
     
@@ -126,63 +129,62 @@ def get_map(df_scores,selected_score,selected_score_axis, selected_score_desc, u
         "fontSize":15,
         "lineHeight":5,
     }
+    
+    # COLORS
     if selected_score=="webcam_score":
         colorscale = alt.Scale(scheme='blues')
+        color=alt.Color(selected_score+':Q', 
+                                title=selected_score_axis, 
+                                scale=colorscale,
+                                legend=None)
+    elif selected_score=="airquality_score":
+        colorscale = alt.Scale(domain=(200, 0),scheme='redyellowgreen')
+        color=alt.Color('airquality_score:Q', 
+                                title=selected_score_axis, 
+                                scale=colorscale,
+                                legend=None)
     else:
         colorscale = alt.Scale(domain=(200, 0), scheme='redyellowgreen')
+        color=alt.Color(selected_score+':Q', 
+                                title=selected_score_axis, 
+                                scale=colorscale,
+                                legend=None)
     
+    # TOOLTIPS
     if use_states:
-        #draw state map
-        layer = alt.Chart(data_topojson_remote).mark_geoshape(
-            stroke='white',
-            strokeWidth=sw
-        ).encode(
-                color=alt.Color(selected_score+':Q', 
-                                title=selected_score_axis, 
-                                scale=colorscale,
-                                legend=None
-            ),
-            tooltip=[alt.Tooltip("state_name:N", title="Bundesland"),
-                     alt.Tooltip(selected_score+":Q", title=selected_score_axis)]
-        ).transform_lookup(
-            lookup='id',
-            from_= alt.LookupData(df_scores[(df_scores["date"] == str(latest_date)) & (df_scores[selected_score] > 0)], 'id', [selected_score])
-        ).transform_lookup(
-            lookup='id',
-            from_= alt.LookupData(df_scores[(df_scores["date"] == str(latest_date)) & (df_scores[selected_score] > 0)], 'id', ['state_name'])
-        ).properties(
-            width='container',
-            height = MAPHEIGHT,
-            title=title
-        )
+        titlestr = "Bundesland"
     else:
-        # draw counties map
-        df_scores_lookup = df_scores[(df_scores["date"] == str(latest_date)) & (df_scores["filtered_score"] >= 0)]
-        df_scores_lookup = df_scores_lookup[['id','date','name','filtered_score']]
-        
-        layer = alt.Chart(data_topojson_remote).mark_geoshape(
+        titlestr = "Landkreis"
+    
+    tooltip=[alt.Tooltip("name:N", title=titlestr),
+             alt.Tooltip(selected_score+":Q", title=selected_score_axis)]
+    if selected_score=="airquality_score":
+        tooltip.append(alt.Tooltip("airquality_desc:N", title="Beschreibung"))
+    
+    
+    df_scores_lookup = df_scores[(df_scores["date"] == str(latest_date)) & (df_scores[selected_score] >= 0)]
+    
+    layer = alt.Chart(data_topojson_remote).mark_geoshape(
             stroke='white',
             strokeWidth=sw
         ).encode(
-                color=alt.Color('filtered_score:Q', 
-                                title=selected_score_axis, 
-                                scale=colorscale,
-                                legend=None
-            ),
-            tooltip=[alt.Tooltip("name:N", title="Kreis"),
-                     alt.Tooltip("filtered_score:Q", title=selected_score_axis)]
+            color=color,
+            tooltip=tooltip
         ).transform_lookup(
             lookup='id',
-            from_= alt.LookupData(df_scores_lookup, 'id', ['filtered_score'])
+            from_= alt.LookupData(df_scores_lookup, 'id', [selected_score])
         ).transform_lookup(
             lookup='id',
             from_= alt.LookupData(df_scores_lookup, 'id', ['name'])
+        ).transform_lookup(
+            lookup='id',
+            from_= alt.LookupData(df_scores_lookup, 'id', ['airquality_desc'])
         ).properties(
             width='container',
             height = MAPHEIGHT,
             title=title
         )
-        
+    
     if use_states:
         c = alt.layer(basemap, layer).configure_view(strokeOpacity=0)
     else:
@@ -224,13 +226,13 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, selected_
             )
     elif use_states:
         # Bundesländer
-        df_scores=df_scores[["state_name", "date", selected_score]].dropna()
+        df_scores=df_scores[["name", "date", selected_score]].dropna()
         chart = alt.Chart(df_scores).mark_line(point=True).encode(
             x=alt.X('date:T', axis=alt.Axis(title='Datum', format=("%d %b"))),
             y=alt.Y(selected_score+':Q', title=selected_score_axis),
-            color=alt.Color('state_name', title="Bundesland", scale=alt.Scale(scheme='category20')),
+            color=alt.Color('name', title="Bundesland", scale=alt.Scale(scheme='category20')),
             tooltip=[
-                alt.Tooltip("state_name:N", title="Bundesland"),
+                alt.Tooltip("name:N", title="Bundesland"),
                 alt.Tooltip(selected_score+":Q", title=selected_score_axis),
                 alt.Tooltip("date:T", title="Datum"),
                 ]
@@ -455,6 +457,8 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
     selected_score = inverse_scorenames_desc[selected_score_desc]
     if selected_score == "webcam_score":
         selected_score_axis = scorenames_axis[selected_score] + ' pro Stunde' # absolute values
+    elif selected_score == "airquality_score":
+        selected_score_axis = scorenames_axis[selected_score] + ' (AQI)' # absolute values
     else:
         selected_score_axis = scorenames_axis[selected_score] + ' (%)'
     
@@ -479,12 +483,13 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
     if use_states:
         # aggregate state data
         df_scores['state_id'] = df_scores.apply(lambda x: str(x['id'])[:2],axis=1) # get state id (first two letters of county id)
-        df_scores['state_name'] = df_scores.apply(lambda x: state_id_to_name[x['state_id']],axis=1) # get state name
-        df_scores = df_scores.groupby(['state_name','date']).mean() # group by state and date, calculate mean scores
+        df_scores['name'] = df_scores.apply(lambda x: state_id_to_name[x['state_id']],axis=1) # get state name
+        df_scores = df_scores.groupby(['name','date']).mean() # group by state and date, calculate mean scores
         df_scores = df_scores.round(1) #round
         df_scores['id'] = df_scores.apply(lambda x: state_name_to_id[x.name[0]],axis=1) # re-add state indices
         df_scores = df_scores.replace([np.inf, -np.inf], np.nan) # remove infs
         df_scores = df_scores.reset_index() # make index columns into regular columns
+        df_scores["airquality_desc"] = df_scores.apply(lambda x: get_airquality_desc(x["airquality_score"]),axis=1)
     else:
         #filter scores based on selected places
         #if len(countys) > 0:
@@ -650,7 +655,7 @@ def dashboard():
     except:
         st_map_header.subheader('Social Distancing Karte vom {}'.format(latest_date))
     
-    if selected_score != "webcam_score":
+    if selected_score not in ["webcam_score", "airquality_score"]:
         st_legend.image("images/legende.png") 
      
 
