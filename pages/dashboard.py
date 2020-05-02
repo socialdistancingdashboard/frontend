@@ -204,53 +204,66 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, selected_
         "fontSize":15,
         "lineHeight":5,
     }
+    if use_states:
+        titlestr = "Bundesland"
+        scheme='category20'
+    else:
+        titlestr = "Landkreis"
+        scheme='category10'
     
     if len(countys) > 0 and not use_states:
         # Landkreise
         df_scores = df_scores[df_scores["name"].isin(countys)].dropna(axis=1, how="all")
-        chart = alt.Chart(
-            df_scores[df_scores["name"].isin(countys)][["name", "date", "filtered_score"]].dropna()
-            ).mark_line(point=True).encode(
-                x=alt.X('date:T', axis=alt.Axis(title='Datum', format=("%d %b"))),
-                y=alt.Y('filtered_score:Q', title=selected_score_axis),
-                color=alt.Color('name', title="Landkreis"),
-                tooltip=[
-                    alt.Tooltip("name:N", title="Landkreis"),
-                    alt.Tooltip('filtered_score:Q', title=selected_score_axis),
-                    alt.Tooltip("date:T", title="Datum"),
-                    ]
-            ).properties(
-                width='container',
-                height=400,
-                title=title
-            )
+        df_scores = df_scores[["name", "date", selected_score]].dropna()
     elif use_states:
-        # Bundesländer
-        df_scores=df_scores[["name", "date", selected_score]].dropna()
-        chart = alt.Chart(df_scores).mark_line(point=True).encode(
+        pass
+    else:
+        return None # county mode, nothing selected
+    
+    # altair selectors    
+    highlight = alt.selection_single(empty="none", fields=['name'], on='mouseover', nearest=True, clear="mouseout")
+    highlight_circles = alt.selection_single(empty="none", fields=['date','name'], on='mouseover', nearest=True, clear="mouseout")    
+    
+    # charts
+    base = alt.Chart(df_scores[["name", "date", selected_score]].dropna()).encode(
             x=alt.X('date:T', axis=alt.Axis(title='Datum', format=("%d %b"))),
             y=alt.Y(selected_score+':Q', title=selected_score_axis),
-            color=alt.Color('name', title="Bundesland", scale=alt.Scale(scheme='category20')),
+            color=alt.Color('name', title=titlestr, scale=alt.Scale(scheme=scheme), legend=alt.Legend(orient="bottom",columns=2)),
             tooltip=[
-                alt.Tooltip("name:N", title="Bundesland"),
+                alt.Tooltip("name:N", title=titlestr),
                 alt.Tooltip(selected_score+":Q", title=selected_score_axis),
                 alt.Tooltip("date:T", title="Datum"),
                 ]
+        )
+    
+    points = base.mark_circle().encode(
+        opacity=alt.value(1),
+        size=alt.condition(~highlight_circles, alt.value(40), alt.value(300)),
+        ).add_selection(
+            highlight
+        ).add_selection(
+            highlight_circles
         ).properties(
             width='container',
-            height=400,
+            height=450,
             title=title
         )
-    else:
-        return None
         
-    # add horizontal rule at 100%
-    rule = alt.Chart(df_scores).mark_rule(color='lightgray').encode(
-        y="a:Q"
-    ).transform_calculate(
-        a="100"
-    )
-    return rule+chart
+    lines = base.mark_line().encode(
+        size=alt.condition(~highlight, alt.value(2), alt.value(6)),
+        opacity=alt.condition(~highlight, alt.value(0.5), alt.value(1))
+        )
+        
+    if selected_score in ["airquality_score","webcam_score"]:
+        return points+lines
+    else:
+        # add horizontal rule at 100%
+        rule = alt.Chart(df_scores).mark_rule(color='lightgray').encode(
+            y="a:Q"
+        ).transform_calculate(
+            a="100"
+        )
+        return rule+points+lines
 
 @st.cache(ttl=43200,allow_output_mutation=True) # time-to-live: 12h
 def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_score_axis):
