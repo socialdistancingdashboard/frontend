@@ -378,6 +378,10 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
                     "fontWeight":"normal",
                     "fontSize":12
                 }
+        )
+    selectorchart = alt.Chart(df_median).mark_point().encode(
+        x='date:T',
+        opacity=alt.value(0),
         ).add_selection(
             selector
         )
@@ -433,7 +437,7 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
         chart_top = chart+rulemedian
     else:
         chart_top = rule100+chart+rulemedian
-    chart_bottom = median_selected_rule+median_line+median_points+median_selected+median_selected_rule2
+    chart_bottom = median_selected_rule+median_line+median_points+median_selected+median_selected_rule2+selectorchart
     return chart_top & chart_bottom
 
 
