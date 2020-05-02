@@ -650,7 +650,7 @@ def dashboard():
     st_timeline_desc.markdown('''
         ---
         ## Zeitlicher Verlauf <span id="timeline"></span>   
-        Hier kannst du den zeitlichen Verlauf der gewählten Datenquelle für verschiedene **{regionen}** in Deutschland vergleichen. Angezeigt werden Daten über **{datasource}**. Du kannst die Datenquelle über die Schaltflächen ändern.
+        Hier kannst Du den zeitlichen Verlauf der gewählten Datenquelle für verschiedene **{regionen}** in Deutschland vergleichen. Angezeigt werden Daten über **{datasource}**. Du kannst die Datenquelle über die Schaltflächen ändern.
         
         **Sieh doch mal nach wie die Lage in Deiner Region ist!**
     '''.format(regionen=use_states_select2,
@@ -683,7 +683,7 @@ def dashboard():
         ## Verteilung über alle Landkreise <span id="histogram"></span>
         Hier kannst Du einen Überblick bekommen, wie die Verteilung der Daten über **{datasource}** für alle verfügbaren Landkreise ist. Du kannst die Datenauswahl weiter unten im Menü ändern. 
         
-        Die pinke Linie ist der **Median**, das heißt jeweils die Hälfte aller Landkreise hat einen höheren beziehungswiese niedrigeren Score als dieser Wert. Im unteren Graph ist der zeitliche Verlauf des Medians dargestellt. **In diesem Graph kannst du das Datum auswählen, für welches Dir die Verteilung über alle Landkreise angezeigt wird.**
+        Die pinke Linie ist der **Median**, das heißt jeweils die Hälfte aller Landkreise hat einen höheren beziehungswiese niedrigeren Score als dieser Wert. Im unteren Graph ist der zeitliche Verlauf des Medians dargestellt. **In diesem Graph kannst Du das Datum auswählen, für welches Dir die Verteilung über alle Landkreise angezeigt wird.**
         '''.format(datasource=selected_score_desc3), unsafe_allow_html=True
         )
     c=get_histograms(df_scores3, selected_score3, selected_score_desc3, selected_score_axis3)
