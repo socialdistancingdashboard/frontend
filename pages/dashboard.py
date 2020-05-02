@@ -267,10 +267,6 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, selected_
 
 @st.cache(ttl=43200,allow_output_mutation=True) # time-to-live: 12h
 def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_score_axis):
-    '''
-    this is called from inside get_histogram so that the charts
-    can be cached.
-    '''
     
     # prepare dataframe
     df_scores = df_scores_in.copy()
@@ -294,6 +290,9 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
     # median datframe
     df_median = df_scores.groupby("date").median().reset_index()
     
+    maxval = max(df_scores[selected_score])
+    maxval = 100*np.ceil(maxval/100)
+    
     # plot title
     title= {
         "text": ["", "{}".format(selected_score_desc)], # use two lines as hack so the umlauts at Ö are not cut off
@@ -308,15 +307,12 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
     
     # special treatment for webcam score b/c it uses absolute values
     if selected_score=="webcam_score":
-        scale=alt.Scale(domain=(200, 0))
+        scale=alt.Scale(domain=(1.05*maxval, 0),scheme="blues")
     else:
-        scale=alt.Scale(
-                domain=(200, 0), 
-                scheme="redyellowgreen")
+        scale=alt.Scale(domain=(200, 0),scheme="redyellowgreen")
     
     # Here comes the magic: a selector!
     selector = alt.selection_single(empty="none", fields=['date_id'], on='mouseover', nearest=True, init={'date_id': len(dates)-2})
-    
     
     #--- Altair charts from here on ---#
     # Histogram chart
@@ -326,15 +322,14 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
         alt.X(
             selected_score+":Q",
             title=selected_score_axis,
-            bin=alt.Bin(extent=[0, 200], step=10),
+            bin=alt.Bin(extent=[0, max(200,maxval)], step=maxval/20)
             ),
         alt.Y(
             'count():Q',
             title="Anzahl Landkreise",
-            #axis = alt.Axis(format="%.2f")
             ),
         color = alt.Color(
-            selected_score, 
+            selected_score+":Q", 
             scale=scale,
             legend=None,
             ),
@@ -347,7 +342,7 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
         )
     
     # Rule at 100%
-    rule100 = alt.Chart(df_scores).mark_rule(color='lightgray',size=2).encode(
+    rule100 = alt.Chart(df_scores).mark_rule(color='lightgray',size=3).encode(
             x="a:Q"
         ).transform_calculate(
             a="100"
@@ -434,8 +429,12 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
             selector
         )
     
-    
-    return (rule100+chart+rulemedian & median_selected_rule+median_line+median_points+median_selected+median_selected_rule2)
+    if selected_score in ["airquality_score","webcam_score"]:
+        chart_top = chart+rulemedian
+    else:
+        chart_top = rule100+chart+rulemedian
+    chart_bottom = median_selected_rule+median_line+median_points+median_selected+median_selected_rule2
+    return chart_top & chart_bottom
 
 
 
@@ -519,12 +518,6 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
         df_scores = df_scores.replace([np.inf, -np.inf], np.nan) # remove infs
         df_scores = df_scores.reset_index() # make index columns into regular columns
         df_scores["airquality_desc"] = df_scores.apply(lambda x: get_airquality_desc(x["airquality_score"]),axis=1)
-    else:
-        #filter scores based on selected places
-        #if len(countys) > 0:
-            #df_scores["filtered_score"] = np.where(df_scores["name"].isin(countys), df_scores[selected_score],[0] *# len(df_scores))
-        #else:
-        df_scores["filtered_score"] = df_scores[selected_score]
 
     df_scores["date"] = pd.to_datetime(df_scores["date"])
     df_scores = df_scores.round(1)
