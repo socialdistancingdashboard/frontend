@@ -5,6 +5,7 @@ import streamlit as st
 from pages import dashboard
 # MAIN MENU HTML (this needs to be the first markdown block for the css to work!)
 st.markdown('''
+<a id="top"></a>
 <div id="nav-container">
     <div id="logo">
         <img src="https://blog.everyonecounts.de/wp-content/uploads/2020/04/logo_with_medium_text-1980x434.png" alt="EveryoneCounts - Das Social Distancing Dashboard" />
@@ -200,6 +201,8 @@ dashboard.dashboard()
 # FOOTER
 st.markdown("""
 <hr>
+
+    
 <div id="footer">
     <div>
     <a href="https://blog.everyonecounts.de/impressum/">Impressum</a>
@@ -210,6 +213,7 @@ st.markdown("""
     <a href="mailto:kontakt@everyonecounts.de">E-Mail</a>
     <a href="https://blog.everyonecounts.de/">Blog</a>
     </div>
+    <div><a href="#top">Nach oben &uarr;</a></div>
 </div>
 <hr>
 
@@ -221,7 +225,7 @@ st.markdown("""
   flex-wrap: wrap;
   width:100%;
 }
-p>a, #footer div a {
+p>a, li>a, #footer div a {
     color: #e22658 !important; 
 }
 #footer div a{

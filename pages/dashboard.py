@@ -434,7 +434,9 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
     id_to_name = {cid:county_names[idx] for idx,cid in enumerate(county_ids)}
     state_id_to_name = {cid:state_names[idx] for idx,cid in enumerate(state_ids)}
     state_name_to_id = {state_names[idx]:cid for idx,cid in enumerate(state_ids)}
-
+    
+    st_desc = st.empty()
+    
     # LEVEL OF DETAIL SELECT
     if allow_detail_select:
         use_states_select  = st.radio('Detailgrad:', 
@@ -478,6 +480,20 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
                                 )
     else:
         countys = []
+    
+    # Show additional information text for certain scores
+    desc = ""
+    if selected_score in ["webcam_score","airquality_score"]:
+        desc += '''
+                
+        Für diesen Datensatz besitzen wir leider keine Referenz-Daten vor der COVID-Pandemie, daher werden **Absolutwerte** angezeigt und Werte zwischen {regionen}n lassen sich nicht vergleichen.
+        '''.format(regionen=use_states_select)
+    if selected_score == "airquality_score":
+        desc += '''
+                
+        Die Daten kommen vom [World Air Quality Project](https://aqicn.org/here/de/) und die Skala richtet sich nach dem ["Air Quality Index" (AQI)](https://aqicn.org/scale/de/).
+        '''
+    st_desc.markdown(desc,unsafe_allow_html=True)
         
      # Prepare df_scores according to Landkreis/Bundesland selection
     if use_states:
@@ -505,15 +521,8 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
 
 
 def dashboard():
-    # make page here with placeholders
-    # thus later elements (e.g. county selector) can influence
-    # earlier elements (the map) because they can appear earlier in 
-    # the code without appearing earlier in the webpage
-    #st.title("EveryoneCounts")
-    #st.header("Das Social Distancing Dashboard")
-    st_map_header      = st.empty()
-    st_info_text       = st.empty()
-   
+    ''' Main code to display the streamlit dashboard '''
+
     # get score data
     df_scores_full, scorenames = load_real_data()
    
@@ -564,6 +573,22 @@ def dashboard():
         else:
             scorenames_axis[scorename] = scorename
     
+    
+    st.markdown('''
+        Die Maßnahmen gegen COVID19 wie Kontaktverbote und geschlossene Geschäfte haben große Änderungen in unserem Alltag mit sich gebracht. Wir sehen dies jeden Tag wenn wir vor die Haustür gehen. Aber wie ist die Lage im Rest des Landes? Wird Social Distancing überall gleich strikt befolgt? Sinkt die Zurückhaltung am Wochenende oder bei guten Wetter? Sind tatsächlich mehr/weniger Menschen im Park unterwegs? Diese Fragen sind sehr schwer direkt zu beantworten, aber wir können versuchen, **indirekt** Erkentnisse darüber zu gewinnen indem wir verschiedene Indikatoren betrachten.
+
+        Dazu setzen wir auf unterschiedliche Datenquellen, um ein möglichst umfassendes Bild zu zeichnen. 
+        Wo es möglich ist, berechnen wir einen einfach verständlichen relativen Wert. Dabei entspricht **100%  dem Normal-Wert vor der COVID19-Pandemie**, also bevor die Bürger zu Social Distancing aufgerufen wurden. Ein kleiner Wert weist darauf hin, dass in unserer Datenquelle eine Verringerung der Aktivität gemessen wurde. Wenn eine relative Angabe nicht möglich ist (z.B. weil unsere Daten nicht weit genug in die Vergangenheit reichen um zu bestimmen was ein "normales" Aktivitätsniveau ist) werden absolute Werte angegeben.
+
+        Im Folgenden kannst Du unseren Datensatz auf unterschiedliche Weise interaktiv erkunden:
+        - <a href="#map">Aktuelle Deutschlandkarte</a>
+        - <a href="#timeline">Zeitlicher Verlauf</a>
+        - <a href="#histogram">Verteilung über alle Landkreise</a>
+    ''',unsafe_allow_html=True)
+
+    # MAP DESCRIPTION
+    st_map_desc        = st.empty()
+    
     # Selection box for the map
     df_scores, selected_score, selected_score_desc, selected_score_axis, use_states, use_states_select, countys, latest_date = detail_score_selector(df_scores_full, 
                                         scorenames_desc, 
@@ -574,9 +599,30 @@ def dashboard():
                                         default_detail_index=0,
                                         default_score="gmap_score"
                                         )
-    st_map             = st.empty()
-    st_legend          = st.empty()
-    st_timeline_header = st.empty()
+    
+    st_map_desc.markdown('''
+        ---
+        ## Aktuelle Karte vom {datum}<span id="map"></span>    
+        In der Karte siehst Du wie sich die COVID-19-Maßnahmen auf die verschiedenen **{regionen}** in Deutschland auswirkt. Angezeigt werden Daten über **{datasource}**. Du kannst die Datenquelle über die Schaltflächen ändern.
+    '''.format(regionen=use_states_select,
+               datasource=selected_score_desc,
+               datum=datetime.datetime.strptime(latest_date,"%Y-%m-%d").strftime("%d.%m.%Y")),
+        unsafe_allow_html=True)
+    
+    # DRAW MAP
+    map = get_map(df_scores, selected_score, selected_score_axis, selected_score_desc, use_states, latest_date)
+    map2 = map.copy() # otherwise streamlit gives a Cached Object Mutated warning
+    st.altair_chart(map2)
+    
+    # MAP LEGEND
+    if selected_score=="airquality_score":
+        st.image("images/legende_airquality.png")
+    elif selected_score=="webcam_score":
+        pass # no legend
+    else:
+        st.image("images/legende.png") 
+    
+    # TIMELINE DESCRIPTION    
     st_timeline_desc   = st.empty()
     
     # Selection box for the timeline
@@ -589,98 +635,30 @@ def dashboard():
                                         default_detail_index=1,
                                         default_score="hystreet_score"
                                         )
-
-    
-    st_timeline        = st.empty()
-
-    #selected_date = st.sidebar.date_input('für den Zeitraum vom', datetime.date(2020,3,24))
-    #end_date = st.sidebar.date_input('bis', datetime.date(2020,3,22))
-
-
-    # WRITE DESCRIPTION TEXTS
-    if selected_score == "bike_score":
-        st_info_text.markdown('''
-        In der Karte siehst Du wie sich Social Distancing auf die verschiedenen **{regionen}** in Deutschland auswirkt. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. 
-        
-        Ein Wert von **100% entspricht dem Normal-Wert vor der COVID-Pandemie**, also bevor die Bürger zu Social Distancing aufgerufen wurden. Ein kleiner Wert weist darauf hin, dass in unserer Datenquelle eine Verringerung der Aktivität gemessen wurde. **Im Fall von Radfahrern ist ein erhöhtes Verkehrsaufkommen möglicherweise ein positiver Indikator für Social Distancing.** Mehr Menschen sind mit dem Fahrrad unterwegs anstatt mit anderen Verkehrsmitteln, bei denen Social Distancing schwierieger einzuhalten ist.
-        '''.format(regionen=use_states_select,datasource=selected_score_desc)
-    )
-    elif selected_score == "webcam_score":
-        st_info_text.markdown('''
-        In der Karte siehst Du wie sich Social Distancing auf die verschiedenen **{regionen}** in Deutschland auswirkt. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. 
-        
-        Für diesen Datensatz besitzen wir leider keine Referenz-Daten vor der COVID-Pandemie, daher werden **Absolutwerte** angezeigt und Werte zwischen {regionen}n lassen sich nicht vergleichen.
-        '''.format(regionen=use_states_select,datasource=selected_score_desc)
-    )
-    else:
-        st_info_text.markdown('''
-        In der Karte siehst Du wie sich Social Distancing auf die verschiedenen **{regionen}** in Deutschland auswirkt. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. 
-        
-        Ein Wert von **100% entspricht dem Normal-Wert vor der COVID-Pandemie**, also bevor die Bürger zu Social Distancing aufgerufen wurden. Ein kleiner Wert weist darauf hin, dass in unserer Datenquelle eine Verringerung der Aktivität gemessen wurde, was ein guter Indikator für erfolgreich umgesetztes Social Distancing ist. **Weniger ist besser!**
-        '''.format(regionen=use_states_select,datasource=selected_score_desc)
-    )
     
     
-    if selected_score2 == "bike_score":
-        st_timeline_desc.markdown('''
-        Hier kannst du den zeitlichen Verlauf der gewählten Datenquelle für verschiedene **{regionen}** in Deutschland vergleichen. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. 
-        
-        **Ein Wert von 100% entspricht dem Normal-Wert vor der COVID-Pandemie, also bevor die Bürger zu Social Distancing aufgerufen wurden.** Ein kleiner Wert weist darauf hin, dass in unserer Datenquelle eine Verringerung der Aktivität gemessen wurde, was ein guter Indikator für erfolgreich umgesetztes Social Distancing ist. **Im Fall von Radfahrern ist ein erhöhtes Verkehrsaufkommen möglicherweise ein positiver Indikator für Social Distancing.** Mehr Menschen sind mit dem Fahrrad unterwegs anstatt mit anderen Verkehrsmitteln, bei denen Social Distancing schwierieger einzuhalten ist.
+    st_timeline_desc.markdown('''
+        ---
+        ## Zeitlicher Verlauf <span id="timeline"></span>   
+        Hier kannst du den zeitlichen Verlauf der gewählten Datenquelle für verschiedene **{regionen}** in Deutschland vergleichen. Angezeigt werden Daten über **{datasource}**. Du kannst die Datenquelle über die Schaltflächen ändern.
         
         **Sieh doch mal nach wie die Lage in Deiner Region ist!**
-        '''.format(regionen=use_states_select2,datasource=selected_score_desc2)
-        )
-    elif selected_score2 == "webcam_score":
-        st_timeline_desc.markdown('''
-        Hier kannst du den zeitlichen Verlauf der gewählten Datenquelle für verschiedene **{regionen}** in Deutschland vergleichen. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. 
-        
-        Für diesen Datensatz besitzen wir leider keine Referenz-Daten vor der COVID-Pandemie, daher werden **Absolutwerte** angezeigt und Werte zwischen {regionen}n lassen sich nicht vergleichen.
-        
-        **Sieh doch mal nach wie die Lage in Deiner Region ist!**
-        '''.format(regionen=use_states_select2,datasource=selected_score_desc2)
-        )
-    else:
-        st_timeline_desc.markdown('''
-        Hier kannst du den zeitlichen Verlauf der gewählten Datenquelle für verschiedene **{regionen}** in Deutschland vergleichen. Wir nutzen Daten über **{datasource}** um zu berechnen, wie gut Social Distancing aktuell funktioniert. Du kannst die Datenauswahl weiter unten im Menü ändern. 
-        
-        **Ein Wert von 100% entspricht dem Normal-Wert vor der COVID-Pandemie, also bevor die Bürger zu Social Distancing aufgerufen wurden.** Ein kleiner Wert weist darauf hin, dass in unserer Datenquelle eine Verringerung der Aktivität gemessen wurde, was ein guter Indikator für erfolgreich umgesetztes Social Distancing ist. 
-        
-        **Sieh doch mal nach wie die Lage in Deiner Region ist!**
-        '''.format(regionen=use_states_select2,datasource=selected_score_desc2)
-        )
-
-
-    try:
-        st_map_header.subheader('Social Distancing Karte vom {}'.format( datetime.datetime.strptime(latest_date,"%Y-%m-%d").strftime("%d.%m.%Y") ))
-    except:
-        st_map_header.subheader('Social Distancing Karte vom {}'.format(latest_date))
-    
-    if selected_score not in ["webcam_score", "airquality_score"]:
-        st_legend.image("images/legende.png") 
-     
-
-   
-    # DRAW MAP
-    # ========
-    map = get_map(df_scores, selected_score, selected_score_axis, selected_score_desc, use_states, latest_date)
-    map2 = map.copy() # otherwise streamlit gives a Cached Object Mutated warning
-    st_map.altair_chart(map2)
-    
-    # DRAW TIMELINES
-    # ==============
-    st_timeline_header.subheader("Zeitlicher Verlauf")
+    '''.format(regionen=use_states_select2,
+               datasource=selected_score_desc2),
+        unsafe_allow_html=True
+    )
         
     timeline = get_timeline_plots(df_scores2, selected_score2, selected_score_axis2, selected_score_desc2, use_states2, countys2)
     if timeline is not None:
         timeline2 = timeline.copy() # otherwise streamlit gives a Cached Object Mutated warning
-        st_timeline.altair_chart(timeline2)
+        st.altair_chart(timeline2)
+
 
     # DRAW HISTOGRAMS
     # ===============
-    # Selection box for the timeline
-    st.subheader("Verteilung über alle verfügbaren Landkreise")
     st_histo_desc = st.empty()
     
+    # Selection box for the timeline
     df_scores3, selected_score3, selected_score_desc3, selected_score_axis3, use_states3, use_states_select3, countys3, latest_date3 = detail_score_selector(df_scores_full, 
                                         scorenames_desc, 
                                         scorenames_axis, 
@@ -691,6 +669,8 @@ def dashboard():
                                         )
                                         
     st_histo_desc.markdown('''
+        ---
+        ## Verteilung über alle Landkreise <span id="histogram"></span>
         Hier kannst Du einen Überblick bekommen, wie die Verteilung der Daten über **{datasource}** für alle verfügbaren Landkreise ist. Du kannst die Datenauswahl weiter unten im Menü ändern. 
         
         Die pinke Linie ist der **Median**, das heißt jeweils die Hälfte aller Landkreise hat einen höheren beziehungswiese niedrigeren Score als dieser Wert. Im unteren Graph ist der zeitliche Verlauf des Medians dargestellt. **In diesem Graph kannst du das Datum auswählen, für welches Dir die Verteilung über alle Landkreise angezeigt wird.**
@@ -702,10 +682,8 @@ def dashboard():
         Zur zeitlichen Einordung: Die [Vereinbarung zwischen der Bundesregierung und den Regierungschefinnen und Regierungschefs der Bundesländer angesichts der Corona-Epidemie in Deutschland](https://www.bundeskanzlerin.de/bkin-de/aktuelles/vereinbarung-zwischen-der-bundesregierung-und-den-regierungschefinnen-und-regierungschefs-der-bundeslaender-angesichts-der-corona-epidemie-in-deutschland-1730934) wurde am 16. März veröffentlicht.
     ''')
     
-    # FOOTER
-    # ======
-    #st.subheader("Unsere Datenquellen")
-    #st.image('images/datenquellen.png')
+
+    
     
     # tracking javascript
     st.markdown("""   
