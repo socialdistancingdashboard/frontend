@@ -254,7 +254,7 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, selected_
         opacity=alt.condition(~highlight, alt.value(0.5), alt.value(1))
         )
         
-    if selected_score in ["airquality_score","webcam_score"]:
+    if selected_score in ["airquality_score","webcam_score","tomtom_score"]:
         return points+lines
     else:
         # add horizontal rule at 100%
@@ -291,7 +291,7 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
     df_median = df_scores.groupby("date").median().reset_index()
     
     maxval = max(df_scores[selected_score])
-    maxval = 100*np.ceil(maxval/100)
+    maxval = 10*np.ceil(maxval/10)
     
     # plot title
     title= {
@@ -311,6 +311,11 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
     else:
         scale=alt.Scale(domain=(200, 0),scheme="redyellowgreen")
     
+    if selected_score=="tomtom_score":
+        bin = alt.Bin(extent=[0, max(50,maxval)], step=max(50,maxval)/20)
+    else:
+        bin = alt.Bin(extent=[0, max(200,maxval)], step=max(200,maxval)/20)
+    
     # Here comes the magic: a selector!
     selector = alt.selection_single(empty="none", fields=['date_id'], on='mouseover', nearest=True, init={'date_id': len(dates)-2})
     
@@ -322,7 +327,7 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
         alt.X(
             selected_score+":Q",
             title=selected_score_axis,
-            bin=alt.Bin(extent=[0, max(200,maxval)], step=maxval/20)
+            bin=bin
             ),
         alt.Y(
             'count():Q',
@@ -364,11 +369,7 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
             color="gray",
         ).encode(
             alt.X("date:T", axis=alt.Axis(title='Datum', format=("%d %b"))),
-            alt.Y(selected_score+':Q', title="Median "+selected_score_axis),
-            tooltip=[
-                alt.Tooltip("date:T", title="Datum"),
-                alt.Tooltip(selected_score+":Q", title="Median")
-                ]
+            alt.Y(selected_score+':Q', title="Median "+selected_score_axis)
         ).properties(
                 width='container',
                 height=180,
@@ -382,6 +383,10 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
     selectorchart = alt.Chart(df_median).mark_point().encode(
         x='date:T',
         opacity=alt.value(0),
+        tooltip=[
+                alt.Tooltip("date:T", title="Datum"),
+                alt.Tooltip(selected_score+":Q", title="Median")
+                ]
         ).add_selection(
             selector
         )
@@ -433,7 +438,7 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
             selector
         )
     
-    if selected_score in ["airquality_score","webcam_score"]:
+    if selected_score in ["airquality_score","webcam_score","tomtom_score"]:
         chart_top = chart+rulemedian
     else:
         chart_top = rule100+chart+rulemedian
@@ -570,7 +575,7 @@ def dashboard():
         "regional_score":"Regionalzüge",
         "nationalExpress_score":"ICE-Züge",
         "webcam_score":"Fußgänger",
-        "tomtom_score":"Autoverkehr",
+        "tomtom_score":"Traffic Index",
         "airquality_score":"Luftqualität"
         }
     
