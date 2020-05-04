@@ -481,7 +481,7 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
         selected_score_axis = scorenames_axis[selected_score] + ' (%)'
     
     latest_date = pd.Series(df_scores[df_scores[selected_score] > 0]["date"]).values[-1]
-    
+
     # COUNTY SELECT
     if (not use_states) and allow_county_select:
         available_countys = [value for value in county_names if value in df_scores[df_scores[selected_score] >= 0]["name"].values]
@@ -499,7 +499,7 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
     
     # Show additional information text for certain scores
     desc = ""
-    if selected_score in ["webcam_score","airquality_score"]:
+    if selected_score in ["webcam_score","airquality_score","tomtom_score"]:
         desc += '''
                 
         Für diesen Datensatz besitzen wir leider keine Referenz-Daten vor der COVID-Pandemie, daher werden **Absolutwerte** angezeigt und Werte zwischen {regionen}n lassen sich nicht vergleichen.
@@ -508,6 +508,11 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
         desc += '''
                 
         Die Daten kommen vom [World Air Quality Project](https://aqicn.org/here/de/) und die Skala richtet sich nach dem ["Air Quality Index" (AQI)](https://aqicn.org/scale/de/).
+        '''
+    elif selected_score == "tomtom_score":
+        desc += '''
+                
+        Die Daten stammen vom [TomTom Traffic Index](https://www.tomtom.com/). Die Prozentangaben beschreiben die Zeit, die man aufgrund der Verkehrslage länger unterwegs ist als auf einer komplett freien Straße. Ein Wert von 50% bedeutet also, dass man für einen Trip, der normalerweise 30 Minuten dauern würde, aufgrund der Verkehrslage 15 Minuten mehr benötigt, nämlich 45 Minuten. ([Quelle](https://www.tomtom.com/en_gb/traffic-index/about/))
         '''
     st_desc.markdown(desc,unsafe_allow_html=True)
         
@@ -627,7 +632,7 @@ def dashboard():
     # MAP LEGEND
     if selected_score=="airquality_score":
         st.image("images/legende_airquality.png")
-    elif selected_score=="webcam_score":
+    elif selected_score in ["webcam_score","tomtom_score"]:
         pass # no legend
     else:
         st.image("images/legende.png") 
