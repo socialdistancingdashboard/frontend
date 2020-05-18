@@ -12,6 +12,7 @@ st.markdown('''
     </div>
     <div id="nav">
         <a href="" id="dashboard">Dashboard</a>
+        <a href="https://blog.everyonecounts.de/">Blog</a>
         <a href="https://blog.everyonecounts.de/die-daten/">Die Daten</a>
         <a href="https://blog.everyonecounts.de/das-team/">Das Team</a>
         <a href="https://blog.everyonecounts.de/das-projekt/">Das Projekt</a>
