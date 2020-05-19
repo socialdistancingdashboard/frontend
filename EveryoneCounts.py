@@ -209,7 +209,7 @@ st.markdown("""
     <a href="https://blog.everyonecounts.de/impressum/">Impressum</a>
     </div>
     <div>
-    <a href="https://twitter.com/DistancingDash">Twitter</a>
+    <a href="https://twitter.com/_everyonecounts">Twitter</a>
     <a href="https://github.com/socialdistancingdashboard/">Github</a> 
     <a href="mailto:kontakt@everyonecounts.de">E-Mail</a>
     <a href="https://blog.everyonecounts.de/">Blog</a>
