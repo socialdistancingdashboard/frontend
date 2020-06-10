@@ -217,9 +217,17 @@ st.markdown("""
     <div><a href="#top">Nach oben &uarr;</a></div>
 </div>
 <hr>
+<div id="supporter">
+    <a href="https://www.bmbf.de/">
+    <img src="http://blog.everyonecounts.de/wp-content/uploads/2020/05/grafik-300x212.png" alt="Gefördert vom Bundesministerium für Bildung und Forschung">
+    </a>
+    <a href="https://projecttogether.org/wirvsvirus/">
+    <img src="http://blog.everyonecounts.de/wp-content/uploads/2020/05/Solution-Enabler-300x104.png" alt="WirVsVirus Solution Enabler">
+    </a>
+</div>
 
 <style type="text/css">
-#footer{
+#footer,#supporter{
   display:flex;
   align-items: center;
   justify-content: space-between;
