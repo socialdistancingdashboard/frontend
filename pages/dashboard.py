@@ -232,7 +232,7 @@ def get_timeline_plots(df_scores, selected_score, selected_score_axis, selected_
             tooltip=[
                 alt.Tooltip("name:N", title=titlestr),
                 alt.Tooltip(selected_score+":Q", title=selected_score_axis),
-                alt.Tooltip("date:T", title="Datum"),
+                alt.Tooltip("date:T", title="Datum", format=("%A %d %B")),
                 ]
         )
     
@@ -384,7 +384,7 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
         x='date:T',
         opacity=alt.value(0),
         tooltip=[
-                alt.Tooltip("date:T", title="Datum"),
+                alt.Tooltip("date:T", title="Datum", format=("%A %d %B")),
                 alt.Tooltip(selected_score+":Q", title="Median")
                 ]
         ).add_selection(
