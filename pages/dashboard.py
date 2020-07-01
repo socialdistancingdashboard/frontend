@@ -61,7 +61,10 @@ def load_real_data():
             dates.append(date)
             for scorename in scorenames:
                 if scorename in scores:
-                    scorevalue = scores[scorename]*100
+                    if scorename == "webcam_score":
+                        scorevalue = scores[scorename] # absolute values
+                    else:
+                        scorevalue = scores[scorename]*100
                 else:
                     scorevalue = None
                 scorevalues[scorename].append(scorevalue)
@@ -308,14 +311,14 @@ def get_histograms(df_scores_in,selected_score,selected_score_desc,selected_scor
     # special treatment for webcam score b/c it uses absolute values
     if selected_score=="webcam_score":
         scale=alt.Scale(domain=(1.05*maxval, 0),scheme="blues")
-    else:
+        bin = alt.Bin(extent=[0, maxval], step=maxval/20)
+    elif selected_score=="tomtom_score":
         scale=alt.Scale(domain=(200, 0),scheme="redyellowgreen")
-    
-    if selected_score=="tomtom_score":
         bin = alt.Bin(extent=[0, max(50,maxval)], step=max(50,maxval)/20)
     else:
+        scale=alt.Scale(domain=(200, 0),scheme="redyellowgreen")
         bin = alt.Bin(extent=[0, max(200,maxval)], step=max(200,maxval)/20)
-    
+        
     # Here comes the magic: a selector!
     selector = alt.selection_single(empty="none", fields=['date_id'], on='mouseover', nearest=True, init={'date_id': len(dates)-2})
     
@@ -479,7 +482,7 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
     inverse_scorenames_desc = {scorenames_desc[key]:key for key in scorenames_desc.keys()}
     selected_score = inverse_scorenames_desc[selected_score_desc]
     if selected_score == "webcam_score":
-        selected_score_axis = scorenames_axis[selected_score] + ' pro Stunde' # absolute values
+        selected_score_axis = scorenames_axis[selected_score] + ' (Tagesdurchschnitt)' # absolute values
     elif selected_score == "airquality_score":
         selected_score_axis = scorenames_axis[selected_score] + ' (AQI)' # absolute values
     else:
