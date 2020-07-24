@@ -620,7 +620,7 @@ def dashboard():
                                         allow_detail_select=True,
                                         key='map',
                                         default_detail_index=0,
-                                        default_score="gmap_score"
+                                        default_score="hystreet_score"
                                         )
     
     st_map_desc.markdown('''
