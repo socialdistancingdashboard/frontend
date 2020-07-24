@@ -192,6 +192,29 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# UMFRAGE
+st.markdown("""
+    <style type="text/css">
+        @keyframes fadein {
+              0% {border-color:#fff;}
+              50% {border-color:#F2B102;}
+              100% {border-color:#fff;}
+        }
+        #umfrage {
+            border:2px solid white;
+            padding:20px;
+            border-radius:5px;
+            background-color: #FEE59F;
+            animation-name: fadein;
+            animation-duration: 0.75s;
+            animation-iteration-count: 6;
+        }
+    </style>
+    <div id="umfrage">
+        <p>Hast Du <b>3 Minuten</b> Zeit für unsere kleine <b>Nutzerbefragung</b>? Wir möchten besser werden und EveryoneCounts weiterentwickeln, dafür ist Feedback von unseren Nutzern von unschätzbarem Wert. Hilf mit!</p>
+        <p style="text-align:center;"><a href="https://docs.google.com/forms/d/e/1FAIpQLSda91f1ewYx2y-Z7GOK8FqffThDIxUMe1OJ0bWaC0EuRiMxcA/viewform" target="_blank">>> Link zur Umfrage (Google Forms) <<</a><p>
+    </div>
+""", unsafe_allow_html=True)
 
 # DASHBOARD
 st.markdown("""
