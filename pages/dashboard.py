@@ -522,6 +522,11 @@ def detail_score_selector(df_scores_in, scorenames_desc, scorenames_axis, allow_
                 
         Die Daten stammen vom [TomTom Traffic Index](https://www.tomtom.com/). Die Prozentangaben beschreiben die Zeit, die man aufgrund der Verkehrslage länger unterwegs ist als auf einer komplett freien Straße. Ein Wert von 50% bedeutet also, dass man für einen Trip, der normalerweise 30 Minuten dauern würde, aufgrund der Verkehrslage 15 Minuten mehr benötigt, nämlich 45 Minuten. ([Quelle](https://www.tomtom.com/en_gb/traffic-index/about/))
         '''
+    if selected_score in ["gmap_score","tomtom_score"]:
+        desc += '''
+                
+        <div style="background:#FEE59F; border-radius:5px; padding:10px;"><b>Hinweis:</b> Für diesen Datensatz können wir leider keine aktuellen Daten mehr anbieten.</div>
+        '''.format(regionen=use_states_select)
     st_desc.markdown(desc,unsafe_allow_html=True)
         
      # Prepare df_scores according to Landkreis/Bundesland selection
