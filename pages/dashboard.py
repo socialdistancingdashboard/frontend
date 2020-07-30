@@ -31,7 +31,10 @@ def load_topojson():
 @st.cache(ttl=43200) # time-to-live: 12h
 def load_real_data():
     response = requests.get('https://im6qye3mc3.execute-api.eu-central-1.amazonaws.com/prod')
-    jsondump = response.json()["body"]
+    try:
+        jsondump = response.json()["body"]
+    except:
+        st.text(response.text)
     county_names, county_ids,_,_ = load_topojson()
     id_to_name = {cid:county_names[idx] for idx,cid in enumerate(county_ids)}
     
